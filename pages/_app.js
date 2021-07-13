@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { AlurakutStyles } from '../src/lib/AlurakutCommons';
 
@@ -39,6 +40,10 @@ export default function App({ Component, pageProps }) {
     <>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
+        <Head>
+          <title>Alurakut</title>
+          <link rel="shortcut icon" href="/logo-favicon.ico" />
+        </Head>
         <Component {...pageProps} />
       </ThemeProvider>
     </>

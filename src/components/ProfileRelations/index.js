@@ -6,9 +6,11 @@ export const ProfileRelationsBoxWrapper = styled(Box)`
     display: grid;
     grid-gap: 8px;
     grid-template-columns: 1fr 1fr 1fr;
-    /* max-height: 220px; */
+    max-height: ${(props) => (props.isShowingMoreItems ? '' : '220px')};
+    overflow: hidden;
     list-style: none;
   }
+
   img {
     object-fit: cover;
     background-position: center center;
@@ -16,12 +18,14 @@ export const ProfileRelationsBoxWrapper = styled(Box)`
     height: 100%;
     position: relative;
   }
+
   ul li a {
     display: inline-block;
     height: 102px;
     position: relative;
     overflow: hidden;
     border-radius: 8px;
+
     span {
       color: #ffffff;
       font-size: 10px;
@@ -37,6 +41,7 @@ export const ProfileRelationsBoxWrapper = styled(Box)`
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
     }
+
     &:after {
       content: '';
       display: block;
@@ -48,5 +53,14 @@ export const ProfileRelationsBoxWrapper = styled(Box)`
       z-index: 1;
       background-image: linear-gradient(0deg, #00000073, transparent);
     }
+  }
+
+  .toggleButton {
+    background: none;
+    padding: 0;
+    font-size: 14px;
+    color: #2e7bb4;
+    font-weight: 600;
+    cursor: pointer;
   }
 `;

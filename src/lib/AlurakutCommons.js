@@ -19,7 +19,10 @@ function Link({ href, children, ...props }) {
 export function AlurakutMenu({ githubUser }) {
   const [isMenuOpen, setMenuState] = React.useState(false);
   return (
-    <AlurakutMenu.Wrapper isMenuOpen={isMenuOpen}>
+    <AlurakutMenu.Wrapper
+      isMenuOpen={isMenuOpen}
+      className={isMenuOpen ? 'active' : ''}
+    >
       <div className="container">
         <AlurakutMenu.Logo src={`${BASE_URL}/logo.svg`} />
 
@@ -59,6 +62,11 @@ export function AlurakutMenu({ githubUser }) {
 AlurakutMenu.Wrapper = styled.header`
   width: 100%;
   background-color: #308bc5;
+
+  &.active {
+    position: fixed;
+    z-index: 100;
+  }
 
   .alurakutMenuProfileSidebar {
     background: white;
