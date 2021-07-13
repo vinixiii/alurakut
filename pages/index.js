@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 import {
   AlurakutMenu,
   OrkutNostalgicIconSet,
@@ -18,6 +18,20 @@ export default function Home() {
     'rafaballerini',
     'felipefialho',
   ];
+
+  const [followers, setFollowers] = useState([]);
+
+  function getGithubFollowers() {
+    fetch(`https://api.github.com/users/${githubUser}/followers`)
+      .then((res) => res.json())
+      .then((data) => setFollowers(data))
+      // .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+  }
+
+  useEffect(() => {
+    getGithubFollowers();
+  }, []);
 
   return (
     <>
@@ -42,14 +56,14 @@ export default function Home() {
           style={{ gridArea: 'profile-relation-area' }}
         >
           <ProfileRelationsBoxWrapper>
-            <h2 className="smallTitle">Amigos ({amigos.length})</h2>
+            <h2 className="smallTitle">Amigos ({followers.length})</h2>
             <ul>
-              {amigos.map((item) => {
+              {followers.map((item) => {
                 return (
                   <li>
-                    <a href={`/users/${item}`} key={item}>
-                      <img src={`https://github.com/${item}.png`} />
-                      <span>{item}</span>
+                    <a href={`/users/${item.login}`} key={item.id}>
+                      <img src={`https://github.com/${item.login}.png`} />
+                      <span>{item.login}</span>
                     </a>
                   </li>
                 );
