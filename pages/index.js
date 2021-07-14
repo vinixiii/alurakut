@@ -34,23 +34,37 @@ export default function Home() {
         'https://img10.orkut.br.com/community/5502314865e4c5b8b06ae90.14801744_2bd6a7a205c2c0cabfd0ef4416e740a0.jpg',
     },
     {
-      id: 4,
-      title: 'Eu odeio segunda-feira',
+      id: 3,
+      title: 'Alura',
       image:
-        'https://img10.orkut.br.com/community/f5578eb70f74221d1488a9d47b1fd250.JPG',
+        'https://yt3.ggpht.com/ytc/AKedOLRszi3O39AB5-uw_1jkrxJppwegjToBgIKFIOqiiA=s88-c-k-c0x00ffffff-no-rj',
+      link: 'https://www.alura.com.br/',
     },
     {
-      id: 5,
-      title: 'Só observo',
+      id: 3,
+      title: 'Rocketseat',
       image:
-        'https://img10.orkut.br.com/community/9c020f231aa774eb1f097162a0197e81.jpg',
+        'https://yt3.ggpht.com/ytc/AKedOLQkXnYChXAHOeBQLzwhk1_BHYgUXs6ITQOakoeNoQ=s88-c-k-c0x00ffffff-no-rj',
+      link: 'https://rocketseat.com.br/',
     },
-    {
-      id: 6,
-      title: 'Putz..Tá Fuçando meu Orkut né?',
-      image:
-        'https://img10.orkut.br.com/community/72e7adad76271e8af157f9051d585b90.jpg',
-    },
+    // {
+    //   id: 4,
+    //   title: 'Eu odeio segunda-feira',
+    //   image:
+    //     'https://img10.orkut.br.com/community/f5578eb70f74221d1488a9d47b1fd250.JPG',
+    // },
+    // {
+    //   id: 5,
+    //   title: 'Só observo',
+    //   image:
+    //     'https://img10.orkut.br.com/community/9c020f231aa774eb1f097162a0197e81.jpg',
+    // },
+    // {
+    //   id: 6,
+    //   title: 'Putz..Tá Fuçando meu Orkut né?',
+    //   image:
+    //     'https://img10.orkut.br.com/community/72e7adad76271e8af157f9051d585b90.jpg',
+    // },
   ]);
 
   function getGithubFollowers() {
@@ -65,13 +79,11 @@ export default function Home() {
 
     const formData = new FormData(e.target);
 
-    console.log('Campo: ', formData.get('title'));
-    console.log('Campo: ', formData.get('image'));
-
     const community = {
       id: new Date().toISOString(),
       title: formData.get('title'),
       image: formData.get('image'),
+      link: formData.get('link'),
     };
 
     setCommunities([...communities, community]);
@@ -142,6 +154,14 @@ export default function Home() {
                   type="text"
                 />
               </div>
+              <div>
+                <input
+                  placeholder="Insira um link para sua comunidade"
+                  name="link"
+                  aria-label="Insira um link para sua comunidade"
+                  type="text"
+                />
+              </div>
 
               <button>Criar comunidade</button>
             </form>
@@ -159,7 +179,7 @@ export default function Home() {
               {followers.map((item) => {
                 return (
                   <li key={item.id}>
-                    <a href={`/users/${item.login}`}>
+                    <a href={item.html_url} target="_blank">
                       <img src={`https://github.com/${item.login}.png`} />
                       <span>{item.login}</span>
                     </a>
@@ -187,7 +207,7 @@ export default function Home() {
               {communities.map((item) => {
                 return (
                   <li key={item.id}>
-                    <a href={`/users/${item.title}`}>
+                    <a href={item.link} target="_blank">
                       <img src={item.image} />
                       <span>{item.title}</span>
                     </a>
