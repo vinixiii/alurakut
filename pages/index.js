@@ -17,37 +17,37 @@ export default function Home() {
     useState(false);
   const [followers, setFollowers] = useState([]);
   const [communities, setCommunities] = useState([
-    {
-      id: 1,
-      title: 'Eu odeio acordar cedo',
-      image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
-    },
-    {
-      id: 2,
-      title: 'Não fui eu, foi meu Eu lírico',
-      image:
-        'https://img10.orkut.br.com/community/5e4d5320754f378e9168d5028ba98728.jpg',
-    },
-    {
-      id: 3,
-      title: 'Eu amo minha mãe',
-      image:
-        'https://img10.orkut.br.com/community/5502314865e4c5b8b06ae90.14801744_2bd6a7a205c2c0cabfd0ef4416e740a0.jpg',
-    },
-    {
-      id: 4,
-      title: 'Alura',
-      image:
-        'https://yt3.ggpht.com/ytc/AKedOLRszi3O39AB5-uw_1jkrxJppwegjToBgIKFIOqiiA=s88-c-k-c0x00ffffff-no-rj',
-      link: 'https://www.alura.com.br/',
-    },
-    {
-      id: 5,
-      title: 'Rocketseat',
-      image:
-        'https://yt3.ggpht.com/ytc/AKedOLQkXnYChXAHOeBQLzwhk1_BHYgUXs6ITQOakoeNoQ=s88-c-k-c0x00ffffff-no-rj',
-      link: 'https://rocketseat.com.br/',
-    },
+    // {
+    //   id: 1,
+    //   title: 'Eu odeio acordar cedo',
+    //   image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
+    // },
+    // {
+    //   id: 2,
+    //   title: 'Não fui eu, foi meu Eu lírico',
+    //   image:
+    //     'https://img10.orkut.br.com/community/5e4d5320754f378e9168d5028ba98728.jpg',
+    // },
+    // {
+    //   id: 3,
+    //   title: 'Eu amo minha mãe',
+    //   image:
+    //     'https://img10.orkut.br.com/community/5502314865e4c5b8b06ae90.14801744_2bd6a7a205c2c0cabfd0ef4416e740a0.jpg',
+    // },
+    // {
+    //   id: 4,
+    //   title: 'Alura',
+    //   image:
+    //     'https://yt3.ggpht.com/ytc/AKedOLRszi3O39AB5-uw_1jkrxJppwegjToBgIKFIOqiiA=s88-c-k-c0x00ffffff-no-rj',
+    //   link: 'https://www.alura.com.br/',
+    // },
+    // {
+    //   id: 5,
+    //   title: 'Rocketseat',
+    //   image:
+    //     'https://yt3.ggpht.com/ytc/AKedOLQkXnYChXAHOeBQLzwhk1_BHYgUXs6ITQOakoeNoQ=s88-c-k-c0x00ffffff-no-rj',
+    //   link: 'https://rocketseat.com.br/',
+    // },
     // {
     //   id: 4,
     //   title: 'Eu odeio segunda-feira',
@@ -75,24 +75,62 @@ export default function Home() {
       .catch((error) => console.log(error));
   }
 
+  function getDataFromDato() {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          allCommunities {
+            id,
+            title,
+            imageUrl,
+            link,
+            creatorSlug
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .then((dataFromDato) => {
+        const communitiesFromDato = dataFromDato.data.allCommunities;
+        setCommunities(communitiesFromDato);
+      });
+  }
+
+  useEffect(() => {
+    getGithubFollowers();
+    getDataFromDato();
+  }, []);
+
   function handleCreateCommunity(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
 
     const community = {
-      id: new Date().toISOString(),
       title: formData.get('title'),
-      image: formData.get('image'),
+      imageUrl: formData.get('image'),
       link: formData.get('link'),
+      creatorSlug: githubUser,
     };
 
-    setCommunities([...communities, community]);
+    fetch('/api/communities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(community),
+    }).then(async (res) => {
+      const data = await res.json();
+      const communityCreated = data.recordCreated;
+      setCommunities([...communities, communityCreated]);
+    });
   }
-
-  useEffect(() => {
-    getGithubFollowers();
-  }, []);
 
   function handleShowMoreFollowers(e) {
     e.preventDefault();
@@ -211,7 +249,7 @@ export default function Home() {
                 return (
                   <li key={item.id}>
                     <a href={item.link} target="_blank">
-                      <img src={item.image} />
+                      <img src={item.imageUrl} />
                       <span>{item.title}</span>
                     </a>
                   </li>
