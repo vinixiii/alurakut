@@ -11,6 +11,7 @@ const Box = styled.div`
     color: #2e7bb4;
     text-decoration: none;
     font-weight: 800;
+    word-break: break-all;
   }
 
   .title {
