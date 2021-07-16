@@ -28,7 +28,7 @@ const Scrap = styled.li`
     img {
       object-fit: cover;
       background-position: center center;
-      width: 100%;
+      width: 88px;
       height: 100%;
       position: relative;
     }
