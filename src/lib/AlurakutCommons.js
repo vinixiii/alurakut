@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import NextLink from 'next/link';
+import { destroyCookie } from 'nookies';
 
 const BASE_URL = 'http://alurakut.vercel.app/';
 const v = '1';
@@ -232,10 +233,10 @@ export function AlurakutProfileSidebarMenuDefault({ githubUser }) {
           <img src={`${BASE_URL}/icons/plus.svg`} />
           GitHub Trends
         </a>
-        <a href="/logout">
+        <Link href="/login" onClick={() => destroyCookie(null, 'token')}>
           <img src={`${BASE_URL}//icons/logout.svg`} />
           Sair
-        </a>
+        </Link>
       </nav>
     </AlurakutProfileSidebarMenuDefault.Wrapper>
   );
