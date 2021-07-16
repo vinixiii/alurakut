@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
@@ -10,24 +10,14 @@ import Box from '../../src/components/Box/index';
 import Scrap from '../../src/components/Scrap';
 
 export default function Scrapbook() {
-  const router = useRouter();
-  const { user } = router.query;
-
-  const githubUser = user;
+  const githubUser = 'vinixiii';
   const [userName, setUserName] = useState('');
 
   const [username, setUsername] = useState('');
   const [description, setDescription] = useState('');
-  const [scraps, setScraps] = useState([]);
+  const [communities, setCommunities] = useState([]);
 
-  function getGithubName() {
-    fetch(`https://api.github.com/users/${githubUser}`)
-      .then((res) => res.json())
-      .then((data) => setUserName(data.name))
-      .catch((error) => console.log(error));
-  }
-
-  function getDataFromDato() {
+  function getCommunitiesFromDato() {
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
@@ -37,24 +27,25 @@ export default function Scrapbook() {
       },
       body: JSON.stringify({
         query: `query {
-          allScraps {
+          allCommunities {
             id,
-            username,
-            description,
+            title,
+            imageUrl,
+            link,
+            creatorSlug
           }
         }`,
       }),
     })
       .then((res) => res.json())
       .then((dataFromDato) => {
-        const scrapsFromDato = dataFromDato.data.allScraps;
-        setScraps(scrapsFromDato);
+        const communitiesFromDato = dataFromDato.data.allCommunities;
+        setCommunities(communitiesFromDato);
       });
   }
 
   useEffect(() => {
-    getGithubName();
-    getDataFromDato();
+    getCommunitiesFromDato();
   }, [githubUser]);
 
   function handleCreateScrap(e) {
@@ -112,58 +103,26 @@ export default function Scrapbook() {
 
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <form onSubmit={(e) => handleCreateScrap(e)}>
-              <div>
-                <input
-                  placeholder="Digite seu username do GitHub"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  aria-label="Digite seu username do GitHub"
-                  type="text"
-                  autoComplete="off"
-                  required
-                />
-              </div>
-              <div>
-                <textarea
-                  placeholder="Deixe um recado para este usuário"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  aria-label="Deixe um recado para vinixiii"
-                  type="text"
-                  autoComplete="off"
-                  required
-                />
-              </div>
-
-              <button>Enviar recado</button>
-            </form>
-          </Box>
-
-          <Box>
-            <h1 className="title subPageTitle">
-              Página de recados de {userName === null ? githubUser : userName} (
-              {scraps.length})
-            </h1>
+            <h1 className="title subPageTitle">Comunidades</h1>
             <p className="pathSubtitle">
-              Início &#62; {githubUser} <span>&#62; Recados</span>
+              Início &#62; <span>Comunidades</span>
             </p>
             <hr />
-            {scraps.length < 1 ? (
-              <span className="noScrap">
-                Este usuário ainda não possui recados
-              </span>
+            {communities.length < 1 ? (
+              <span className="noScrap">Não há comunidades criadas</span>
             ) : (
               <ul>
-                {scraps.map((scrap) => {
+                {communities.map((community) => {
                   return (
-                    <Scrap key={scrap.id}>
-                      <a>
-                        <img src={`https://github.com/${scrap.username}.png`} />
-                      </a>
+                    <Scrap key={community.id}>
+                      <Link href={`/communities/${community.id}`} passHref>
+                        <a>
+                          <img src={community.imageUrl} />
+                        </a>
+                      </Link>
                       <div>
-                        <span>{scrap.username}</span>
-                        <p>{scrap.description}</p>
+                        <span>{community.title}</span>
+                        <p>Criador: {community.creatorSlug}</p>
                       </div>
                     </Scrap>
                   );

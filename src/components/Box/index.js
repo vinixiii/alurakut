@@ -18,6 +18,10 @@ const Box = styled.div`
     font-size: 32px;
     font-weight: 400;
     margin-bottom: 20px;
+
+    &.subPageTitle {
+      font-size: 28px;
+    }
   }
 
   .subTitle {
@@ -102,6 +106,10 @@ const Box = styled.div`
     border-radius: 8px;
     background-color: #6f92bb;
     font-size: 13.33px;
+  }
+
+  .communityImg {
+    width: 128px;
   }
 `;
 

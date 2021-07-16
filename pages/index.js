@@ -79,7 +79,7 @@ export default function Home(props) {
       .catch((error) => console.log(error));
   }
 
-  function getDataFromDato() {
+  function getCommunitiesFromDato() {
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
@@ -133,7 +133,7 @@ export default function Home(props) {
 
   useEffect(() => {
     getGithubFollowers();
-    getDataFromDato();
+    getCommunitiesFromDato();
     getScrapsFromDato();
   }, []);
 
@@ -299,10 +299,12 @@ export default function Home(props) {
               {communities.map((item) => {
                 return (
                   <li key={item.id}>
-                    <a href={item.link} target="_blank">
-                      <img src={item.imageUrl} />
-                      <span>{item.title}</span>
-                    </a>
+                    <Link href={`/communities/${item.id}`} passHref>
+                      <a>
+                        <img src={item.imageUrl} />
+                        <span>{item.title}</span>
+                      </a>
+                    </Link>
                   </li>
                 );
               })}
@@ -336,8 +338,6 @@ export async function getServerSideProps(context) {
       },
     }
   ).then((res) => res.json());
-
-  console.log(isAuthenticated);
 
   // if (!isAuthenticated) {
   //   return {

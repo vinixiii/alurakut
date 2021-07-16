@@ -31,7 +31,7 @@ export function AlurakutMenu({ githubUser }) {
           {[
             { name: 'Inicio', slug: '/' },
             { name: 'Amigos', slug: '/amigos' },
-            { name: 'Comunidades', slug: '/comunidades' },
+            { name: 'Comunidades', slug: '/communities' },
           ].map((menuItem) => (
             <Link
               key={`key__${menuItem.name.toLocaleLowerCase()}`}
@@ -206,41 +206,60 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
 // ================================================================================================================
 // AlurakutProfileSidebarMenuDefault
 // ================================================================================================================
-export function AlurakutProfileSidebarMenuDefault({ githubUser }) {
+export function AlurakutProfileSidebarMenuDefault({
+  githubUser,
+  isCommunityInfo,
+  handleJoinCommunity,
+}) {
   return (
     <AlurakutProfileSidebarMenuDefault.Wrapper>
-      <nav>
-        <Link href="/">
-          <img src={`${BASE_URL}/icons/user.svg`} />
-          Perfil
-        </Link>
-        <Link href={`/scrapbook/${githubUser}`}>
-          <img src={`${BASE_URL}/icons/book.svg`} />
-          Recados
-        </Link>
-        <a href="/">
-          <img src={`${BASE_URL}/icons/camera.svg`} />
-          Fotos
-        </a>
-        <a href="/">
-          <img src={`${BASE_URL}/icons/sun.svg`} />
-          Depoimentos
-        </a>
-      </nav>
-      <hr />
-      <nav>
-        <a href="/">
-          <img src={`${BASE_URL}/icons/plus.svg`} />
-          GitHub Trends
-        </a>
-        <Link href="/login" onClick={() => destroyCookie(null, 'token')}>
-          <img src={`${BASE_URL}//icons/logout.svg`} />
-          Sair
-        </Link>
-      </nav>
+      {!isCommunityInfo ? (
+        <>
+          <nav>
+            <Link href="/">
+              <img src={`${BASE_URL}/icons/user.svg`} />
+              Perfil
+            </Link>
+            <Link href={`/scrapbook/${githubUser}`}>
+              <img src={`${BASE_URL}/icons/book.svg`} />
+              Recados
+            </Link>
+            <a href="/">
+              <img src={`${BASE_URL}/icons/camera.svg`} />
+              Fotos
+            </a>
+            <a href="/">
+              <img src={`${BASE_URL}/icons/sun.svg`} />
+              Depoimentos
+            </a>
+          </nav>
+          <hr />
+          <nav>
+            <a href="/">
+              <img src={`${BASE_URL}/icons/plus.svg`} />
+              GitHub Trends
+            </a>
+            <Link href="/login" onClick={() => destroyCookie(null, 'token')}>
+              <img src={`${BASE_URL}//icons/logout.svg`} />
+              Sair
+            </Link>
+          </nav>
+        </>
+      ) : (
+        <nav className="teste">
+          <button
+            className="plusButton"
+            onClick={(e) => handleJoinCommunity(e)}
+          >
+            <img src={`${BASE_URL}/icons/plus.svg`} />
+            Participar da comunidade
+          </button>
+        </nav>
+      )}
     </AlurakutProfileSidebarMenuDefault.Wrapper>
   );
 }
+
 AlurakutProfileSidebarMenuDefault.Wrapper = styled.div`
   a {
     font-size: 12px;
@@ -251,6 +270,27 @@ AlurakutProfileSidebarMenuDefault.Wrapper = styled.div`
     justify-content: flex-start;
     text-decoration: none;
     img {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+    }
+  }
+
+  .plusButton {
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+
+    font-size: 12px;
+    color: #2e7bb4;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    img {
+      display: inline;
       width: 16px;
       height: 16px;
       margin-right: 5px;
