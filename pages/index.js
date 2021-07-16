@@ -9,6 +9,7 @@ import {
 import MainGrid from '../src/components/MainGrid/index';
 import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
+import Scrap from '../src/components/Scrap';
 
 export default function Home() {
   const githubUser = 'vinixiii';
@@ -67,6 +68,7 @@ export default function Home() {
     //     'https://img10.orkut.br.com/community/72e7adad76271e8af157f9051d585b90.jpg',
     // },
   ]);
+  const [scraps, setScraps] = useState([]);
 
   function getGithubFollowers() {
     fetch(`https://api.github.com/users/${githubUser}/followers`)
@@ -102,9 +104,35 @@ export default function Home() {
       });
   }
 
+  function getScrapsFromDato() {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          allScraps {
+            id,
+            username,
+            description,
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .then((dataFromDato) => {
+        const scrapsFromDato = dataFromDato.data.allScraps;
+        setScraps(scrapsFromDato);
+      });
+  }
+
   useEffect(() => {
     getGithubFollowers();
     getDataFromDato();
+    getScrapsFromDato();
   }, []);
 
   function handleCreateCommunity(e) {
@@ -154,6 +182,7 @@ export default function Home() {
             />
 
             <hr />
+
             <p>
               <a
                 className="boxLink"
@@ -165,7 +194,7 @@ export default function Home() {
             </p>
             <hr />
 
-            <AlurakutProfileSidebarMenuDefault />
+            <AlurakutProfileSidebarMenuDefault githubUser={githubUser} />
           </Box>
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
@@ -205,6 +234,26 @@ export default function Home() {
               <button>Criar comunidade</button>
             </form>
           </Box>
+          {scraps.length > 0 && (
+            <Box>
+              <h1 className="subTitle">Recados recentes</h1>
+              <ul>
+                {scraps.map((scrap) => {
+                  return (
+                    <Scrap key={scrap.id}>
+                      <a>
+                        <img src={`https://github.com/${scrap.username}.png`} />
+                      </a>
+                      <div>
+                        <span>{scrap.username}</span>
+                        <p>{scrap.description}</p>
+                      </div>
+                    </Scrap>
+                  );
+                })}
+              </ul>
+            </Box>
+          )}
         </div>
         <div
           className="profile-relation-area"
