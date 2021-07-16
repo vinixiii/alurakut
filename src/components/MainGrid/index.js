@@ -21,7 +21,8 @@ const MainGrid = styled.main`
     max-width: 1110px;
     display: grid;
     grid-template-areas: 'profile-area welcome-area profile-relation-area';
-    grid-template-columns: 160px 1fr 312px;
+    grid-template-columns: ${(props) =>
+      props.grid === 2 ? '160px 1fr 0px' : '160px 1fr 312px'};
   }
 `;
 

@@ -39,14 +39,14 @@ export default function Profile() {
       .catch((error) => console.error(error));
   }
 
-  function getUserRepositories() {
-    fetch(
-      `http://api.github.com/users/${this.state.username}/repos?sort=created&per_page=10`
-    )
-      .then((response) => response.json())
-      .then((data) => setUserRepositories(data))
-      .catch((error) => console.error(error));
-  }
+  // function getUserRepositories() {
+  //   fetch(
+  //     `http://api.github.com/users/${this.state.username}/repos?sort=created&per_page=10`
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => setUserRepositories(data))
+  //     .catch((error) => console.error(error));
+  // }
 
   function getGithubName() {
     fetch(`https://api.github.com/users/${githubUser}`)
@@ -93,7 +93,7 @@ export default function Profile() {
             </p>
             <hr />
 
-            <AlurakutProfileSidebarMenuDefault />
+            <AlurakutProfileSidebarMenuDefault githubUser={githubUser} />
           </Box>
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>

@@ -9,6 +9,7 @@ import {
 import MainGrid from '../src/components/MainGrid/index';
 import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
+import Scrap from '../src/components/Scrap';
 
 export default function Home() {
   const githubUser = 'vinixiii';
@@ -17,37 +18,37 @@ export default function Home() {
     useState(false);
   const [followers, setFollowers] = useState([]);
   const [communities, setCommunities] = useState([
-    {
-      id: 1,
-      title: 'Eu odeio acordar cedo',
-      image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
-    },
-    {
-      id: 2,
-      title: 'Não fui eu, foi meu Eu lírico',
-      image:
-        'https://img10.orkut.br.com/community/5e4d5320754f378e9168d5028ba98728.jpg',
-    },
-    {
-      id: 3,
-      title: 'Eu amo minha mãe',
-      image:
-        'https://img10.orkut.br.com/community/5502314865e4c5b8b06ae90.14801744_2bd6a7a205c2c0cabfd0ef4416e740a0.jpg',
-    },
-    {
-      id: 4,
-      title: 'Alura',
-      image:
-        'https://yt3.ggpht.com/ytc/AKedOLRszi3O39AB5-uw_1jkrxJppwegjToBgIKFIOqiiA=s88-c-k-c0x00ffffff-no-rj',
-      link: 'https://www.alura.com.br/',
-    },
-    {
-      id: 5,
-      title: 'Rocketseat',
-      image:
-        'https://yt3.ggpht.com/ytc/AKedOLQkXnYChXAHOeBQLzwhk1_BHYgUXs6ITQOakoeNoQ=s88-c-k-c0x00ffffff-no-rj',
-      link: 'https://rocketseat.com.br/',
-    },
+    // {
+    //   id: 1,
+    //   title: 'Eu odeio acordar cedo',
+    //   image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
+    // },
+    // {
+    //   id: 2,
+    //   title: 'Não fui eu, foi meu Eu lírico',
+    //   image:
+    //     'https://img10.orkut.br.com/community/5e4d5320754f378e9168d5028ba98728.jpg',
+    // },
+    // {
+    //   id: 3,
+    //   title: 'Eu amo minha mãe',
+    //   image:
+    //     'https://img10.orkut.br.com/community/5502314865e4c5b8b06ae90.14801744_2bd6a7a205c2c0cabfd0ef4416e740a0.jpg',
+    // },
+    // {
+    //   id: 4,
+    //   title: 'Alura',
+    //   image:
+    //     'https://yt3.ggpht.com/ytc/AKedOLRszi3O39AB5-uw_1jkrxJppwegjToBgIKFIOqiiA=s88-c-k-c0x00ffffff-no-rj',
+    //   link: 'https://www.alura.com.br/',
+    // },
+    // {
+    //   id: 5,
+    //   title: 'Rocketseat',
+    //   image:
+    //     'https://yt3.ggpht.com/ytc/AKedOLQkXnYChXAHOeBQLzwhk1_BHYgUXs6ITQOakoeNoQ=s88-c-k-c0x00ffffff-no-rj',
+    //   link: 'https://rocketseat.com.br/',
+    // },
     // {
     //   id: 4,
     //   title: 'Eu odeio segunda-feira',
@@ -67,6 +68,7 @@ export default function Home() {
     //     'https://img10.orkut.br.com/community/72e7adad76271e8af157f9051d585b90.jpg',
     // },
   ]);
+  const [scraps, setScraps] = useState([]);
 
   function getGithubFollowers() {
     fetch(`https://api.github.com/users/${githubUser}/followers`)
@@ -75,24 +77,88 @@ export default function Home() {
       .catch((error) => console.log(error));
   }
 
+  function getDataFromDato() {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          allCommunities {
+            id,
+            title,
+            imageUrl,
+            link,
+            creatorSlug
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .then((dataFromDato) => {
+        const communitiesFromDato = dataFromDato.data.allCommunities;
+        setCommunities(communitiesFromDato);
+      });
+  }
+
+  function getScrapsFromDato() {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          allScraps {
+            id,
+            username,
+            description,
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .then((dataFromDato) => {
+        const scrapsFromDato = dataFromDato.data.allScraps;
+        setScraps(scrapsFromDato);
+      });
+  }
+
+  useEffect(() => {
+    getGithubFollowers();
+    getDataFromDato();
+    getScrapsFromDato();
+  }, []);
+
   function handleCreateCommunity(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
 
     const community = {
-      id: new Date().toISOString(),
       title: formData.get('title'),
-      image: formData.get('image'),
+      imageUrl: formData.get('image'),
       link: formData.get('link'),
+      creatorSlug: githubUser,
     };
 
-    setCommunities([...communities, community]);
+    fetch('/api/communities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(community),
+    }).then(async (res) => {
+      const data = await res.json();
+      const communityCreated = data.recordCreated;
+      setCommunities([...communities, communityCreated]);
+    });
   }
-
-  useEffect(() => {
-    getGithubFollowers();
-  }, []);
 
   function handleShowMoreFollowers(e) {
     e.preventDefault();
@@ -116,6 +182,7 @@ export default function Home() {
             />
 
             <hr />
+
             <p>
               <a
                 className="boxLink"
@@ -127,7 +194,7 @@ export default function Home() {
             </p>
             <hr />
 
-            <AlurakutProfileSidebarMenuDefault />
+            <AlurakutProfileSidebarMenuDefault githubUser={githubUser} />
           </Box>
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
@@ -167,6 +234,26 @@ export default function Home() {
               <button>Criar comunidade</button>
             </form>
           </Box>
+          {scraps.length > 0 && (
+            <Box>
+              <h1 className="subTitle">Recados recentes</h1>
+              <ul>
+                {scraps.map((scrap) => {
+                  return (
+                    <Scrap key={scrap.id}>
+                      <a>
+                        <img src={`https://github.com/${scrap.username}.png`} />
+                      </a>
+                      <div>
+                        <span>{scrap.username}</span>
+                        <p>{scrap.description}</p>
+                      </div>
+                    </Scrap>
+                  );
+                })}
+              </ul>
+            </Box>
+          )}
         </div>
         <div
           className="profile-relation-area"
@@ -211,7 +298,7 @@ export default function Home() {
                 return (
                   <li key={item.id}>
                     <a href={item.link} target="_blank">
-                      <img src={item.image} />
+                      <img src={item.imageUrl} />
                       <span>{item.title}</span>
                     </a>
                   </li>

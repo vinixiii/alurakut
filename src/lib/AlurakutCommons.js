@@ -205,18 +205,18 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
 // ================================================================================================================
 // AlurakutProfileSidebarMenuDefault
 // ================================================================================================================
-export function AlurakutProfileSidebarMenuDefault() {
+export function AlurakutProfileSidebarMenuDefault({ githubUser }) {
   return (
     <AlurakutProfileSidebarMenuDefault.Wrapper>
       <nav>
-        <a href="/">
+        <Link href="/">
           <img src={`${BASE_URL}/icons/user.svg`} />
           Perfil
-        </a>
-        <a href="/">
+        </Link>
+        <Link href={`/scrapbook/${githubUser}`}>
           <img src={`${BASE_URL}/icons/book.svg`} />
           Recados
-        </a>
+        </Link>
         <a href="/">
           <img src={`${BASE_URL}/icons/camera.svg`} />
           Fotos
@@ -527,7 +527,8 @@ export const AlurakutStyles = css`
       opacity: 0.5;
     }
   }
-  input {
+  input,
+  textarea {
     transition: 0.3s;
     outline: 0;
     &:disabled {
