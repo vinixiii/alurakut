@@ -11,38 +11,18 @@ import MainGrid from '../../src/components/MainGrid/index';
 import Box from '../../src/components/Box/index';
 import Scrap from '../../src/components/Scrap';
 
-export default function Communities({ githubUser }) {
-  const [communities, setCommunities] = useState([]);
+export default function Scrapbook({ githubUser }) {
+  const [followers, setFollowers] = useState([]);
 
-  function getCommunitiesFromDato() {
-    fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          allCommunities {
-            id,
-            title,
-            imageUrl,
-            link,
-            creatorSlug
-          }
-        }`,
-      }),
-    })
+  function getGithubFollowers() {
+    fetch(`https://api.github.com/users/${githubUser}/followers`)
       .then((res) => res.json())
-      .then((dataFromDato) => {
-        const communitiesFromDato = dataFromDato.data.allCommunities;
-        setCommunities(communitiesFromDato);
-      });
+      .then((data) => setFollowers(data))
+      .catch((error) => console.log(error));
   }
 
   useEffect(() => {
-    getCommunitiesFromDato();
+    getGithubFollowers();
   }, [githubUser]);
 
   return (
@@ -75,26 +55,34 @@ export default function Communities({ githubUser }) {
 
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <h1 className="title subPageTitle">Comunidades</h1>
+            <h1 className="title subPageTitle">Amigos</h1>
             <p className="pathSubtitle">
-              Início &#62; <span>Comunidades</span>
+              Início &#62; <span>Amigos</span>
             </p>
             <hr />
-            {communities.length < 1 ? (
-              <span className="noScrap">Não há comunidades criadas</span>
+            {followers.length < 1 ? (
+              <span className="noScrap">Não há amigos</span>
             ) : (
               <ul>
-                {communities.map((community) => {
+                {followers.map((follower) => {
                   return (
-                    <Scrap key={community.id}>
-                      <Link href={`/communities/${community.id}`} passHref>
+                    <Scrap key={follower.id}>
+                      <Link href={`/profile/${follower.login}`} passHref>
                         <a>
-                          <img src={community.imageUrl} />
+                          <img
+                            src={`https://github.com/${follower.login}.png`}
+                          />
                         </a>
                       </Link>
                       <div>
-                        <span>{community.title}</span>
-                        <p>Criador: {community.creatorSlug}</p>
+                        <span>{follower.login}</span>
+                        <a
+                          className="githubLink"
+                          href={follower.html_url}
+                          target="_blank"
+                        >
+                          <p>{follower.html_url}</p>
+                        </a>
                       </div>
                     </Scrap>
                   );

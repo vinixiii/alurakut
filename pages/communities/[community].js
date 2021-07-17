@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import nookies from 'nookies';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
@@ -37,6 +38,7 @@ export default function Community() {
             creatorSlug,
             createdAt,
             users {
+              id,
               username
             }
           }
@@ -59,7 +61,30 @@ export default function Community() {
 
   function handleJoinCommunity(e) {
     e.preventDefault();
-    console.log('Oi');
+
+    const cookies = nookies.get();
+
+    const alreadyMember = members.filter((x) => x.id == cookies.userId);
+    console.log(alreadyMember);
+
+    if (alreadyMember < 1) {
+      fetch('/api/updateCommunity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: cookies.userId,
+          communityId: communityId,
+        }),
+      }).then(() => {
+        getCommunityInfoFromDato();
+      });
+
+      return;
+    }
+
+    alert('Você já participa desta comunidade!');
   }
 
   useEffect(() => {
@@ -85,7 +110,7 @@ export default function Community() {
 
             <hr />
             <p>
-              <a className="boxLink" href={`#`} target="_blank">
+              <a className="boxLink community" href={`#`} target="_blank">
                 {communityInfo.title}
               </a>
             </p>
@@ -168,4 +193,10 @@ export default function Community() {
       </MainGrid>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {},
+  };
 }

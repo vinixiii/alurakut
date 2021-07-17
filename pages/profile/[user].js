@@ -23,30 +23,12 @@ export default function Profile() {
   const [followers, setFollowers] = useState([]);
   const communities = [];
 
-  // const userRepositories = [
-  //   {
-  //     id: 1,
-  //     name: 'Alurakut',
-  //     description: 'Aplicação web criada durante a #ImersaoReact da Alura',
-  //     created_at: '14/07/2021',
-  //   },
-  // ];
-
   function getGithubFollowers() {
     fetch(`https://api.github.com/users/${githubUser}/followers`)
       .then((res) => res.json())
       .then((data) => setFollowers(data))
       .catch((error) => console.error(error));
   }
-
-  // function getUserRepositories() {
-  //   fetch(
-  //     `http://api.github.com/users/${this.state.username}/repos?sort=created&per_page=10`
-  //   )
-  //     .then((response) => response.json())
-  //     .then((data) => setUserRepositories(data))
-  //     .catch((error) => console.error(error));
-  // }
 
   function getGithubName() {
     fetch(`https://api.github.com/users/${githubUser}`)
@@ -58,7 +40,7 @@ export default function Profile() {
   useEffect(() => {
     getGithubFollowers();
     getGithubName();
-  }, [user]);
+  }, []);
 
   function handleShowMoreFollowers(e) {
     e.preventDefault();
@@ -170,4 +152,10 @@ export default function Profile() {
       </MainGrid>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {},
+  };
 }

@@ -14,7 +14,7 @@ const Scrap = styled.li`
     border-radius: 0 0 8px 8px;
   }
 
-  &:nth-child(odd) {
+  &:nth-child(even) {
     background-color: #f1f9fe;
   }
 
@@ -32,6 +32,13 @@ const Scrap = styled.li`
       height: 100%;
       position: relative;
     }
+  }
+
+  .githubLink {
+    color: #333333;
+    height: inherit;
+    border-radius: inherit;
+    text-decoration: none;
   }
 
   div {

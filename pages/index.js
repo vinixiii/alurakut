@@ -13,63 +13,15 @@ import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import Scrap from '../src/components/Scrap';
 
-export default function Home(props) {
-  const githubUser = props.githubUser;
+export default function Home({ githubUser }) {
+  const [githubUserId, setGithubUserId] = useState('');
+
   const [isShowingMoreFollowers, setIsShowingMoreFollowers] = useState(false);
   const [isShowingMoreCommunities, setIsShowingMoreCommunities] =
     useState(false);
+
   const [followers, setFollowers] = useState([]);
-  const [communities, setCommunities] = useState([
-    // {
-    //   id: 1,
-    //   title: 'Eu odeio acordar cedo',
-    //   image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
-    // },
-    // {
-    //   id: 2,
-    //   title: 'Não fui eu, foi meu Eu lírico',
-    //   image:
-    //     'https://img10.orkut.br.com/community/5e4d5320754f378e9168d5028ba98728.jpg',
-    // },
-    // {
-    //   id: 3,
-    //   title: 'Eu amo minha mãe',
-    //   image:
-    //     'https://img10.orkut.br.com/community/5502314865e4c5b8b06ae90.14801744_2bd6a7a205c2c0cabfd0ef4416e740a0.jpg',
-    // },
-    // {
-    //   id: 4,
-    //   title: 'Alura',
-    //   image:
-    //     'https://yt3.ggpht.com/ytc/AKedOLRszi3O39AB5-uw_1jkrxJppwegjToBgIKFIOqiiA=s88-c-k-c0x00ffffff-no-rj',
-    //   link: 'https://www.alura.com.br/',
-    // },
-    // {
-    //   id: 5,
-    //   title: 'Rocketseat',
-    //   image:
-    //     'https://yt3.ggpht.com/ytc/AKedOLQkXnYChXAHOeBQLzwhk1_BHYgUXs6ITQOakoeNoQ=s88-c-k-c0x00ffffff-no-rj',
-    //   link: 'https://rocketseat.com.br/',
-    // },
-    // {
-    //   id: 4,
-    //   title: 'Eu odeio segunda-feira',
-    //   image:
-    //     'https://img10.orkut.br.com/community/f5578eb70f74221d1488a9d47b1fd250.JPG',
-    // },
-    // {
-    //   id: 5,
-    //   title: 'Só observo',
-    //   image:
-    //     'https://img10.orkut.br.com/community/9c020f231aa774eb1f097162a0197e81.jpg',
-    // },
-    // {
-    //   id: 6,
-    //   title: 'Putz..Tá Fuçando meu Orkut né?',
-    //   image:
-    //     'https://img10.orkut.br.com/community/72e7adad76271e8af157f9051d585b90.jpg',
-    // },
-  ]);
+  const [communities, setCommunities] = useState([]);
   const [scraps, setScraps] = useState([]);
 
   function getGithubFollowers() {
@@ -79,7 +31,7 @@ export default function Home(props) {
       .catch((error) => console.log(error));
   }
 
-  function getCommunitiesFromDato() {
+  function getMyUserInfoFromDato() {
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
@@ -89,7 +41,36 @@ export default function Home(props) {
       },
       body: JSON.stringify({
         query: `query {
-          allCommunities {
+          user(filter: {username: {eq: "${githubUser}"}}) {
+            id
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .then(async (dataFromDato) => {
+        const userId = await dataFromDato.data.user.id;
+        getMyCommunitiesFromDato(userId);
+        setGithubUserId(userId);
+
+        nookies.set(null, 'userId', userId, {
+          path: '/',
+          maxAge: 86400 * 7,
+        });
+      });
+  }
+
+  function getMyCommunitiesFromDato(userId) {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          allCommunities(filter: { users: { allIn: ["${userId}"] } }) {
             id,
             title,
             imageUrl,
@@ -133,7 +114,7 @@ export default function Home(props) {
 
   useEffect(() => {
     getGithubFollowers();
-    getCommunitiesFromDato();
+    getMyUserInfoFromDato();
     getScrapsFromDato();
   }, []);
 
@@ -147,6 +128,7 @@ export default function Home(props) {
       imageUrl: formData.get('image'),
       link: formData.get('link'),
       creatorSlug: githubUser,
+      users: [`${githubUserId}`],
     };
 
     fetch('/api/communities', {
@@ -202,7 +184,12 @@ export default function Home(props) {
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
             <h1 className="title">Bem-vindo(a)</h1>
-            <OrkutNostalgicIconSet confiavel={3} legal={3} sexy={2} />
+            <OrkutNostalgicIconSet
+              recados={scraps.length}
+              confiavel={3}
+              legal={3}
+              sexy={2}
+            />
           </Box>
 
           <Box>
@@ -294,7 +281,9 @@ export default function Home(props) {
           <ProfileRelationsBoxWrapper
             isShowingMoreItems={isShowingMoreCommunities}
           >
-            <h2 className="smallTitle">Comunidades ({communities.length})</h2>
+            <h2 className="smallTitle">
+              Minhas comunidades ({communities.length})
+            </h2>
             <ul>
               {communities.map((item) => {
                 return (
@@ -330,23 +319,20 @@ export default function Home(props) {
 export async function getServerSideProps(context) {
   const userToken = await nookies.get(context).token;
 
-  const { isAuthenticated } = await fetch(
-    'https://alurakut.vercel.app/api/auth',
-    {
-      headers: {
-        Authorization: userToken,
-      },
-    }
-  ).then((res) => res.json());
+  const { isAuthenticated } = await fetch('http://localhost:3000/api/auth', {
+    headers: {
+      Authorization: userToken,
+    },
+  }).then((res) => res.json());
 
-  // if (!isAuthenticated) {
-  //   return {
-  //     redirect: {
-  //       destination: '/login',
-  //       permanet: false,
-  //     },
-  //   };
-  // }
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanet: false,
+      },
+    };
+  }
 
   const { githubUser } = jwt.decode(userToken);
 

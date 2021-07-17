@@ -30,7 +30,7 @@ export function AlurakutMenu({ githubUser }) {
         <nav style={{ flex: 1 }}>
           {[
             { name: 'Inicio', slug: '/' },
-            { name: 'Amigos', slug: '/amigos' },
+            { name: 'Amigos', slug: '/friends' },
             { name: 'Comunidades', slug: '/communities' },
           ].map((menuItem) => (
             <Link
@@ -43,7 +43,15 @@ export function AlurakutMenu({ githubUser }) {
         </nav>
 
         <nav>
-          <a href={`/logout`}>Sair</a>
+          <Link
+            href="/login"
+            onClick={() => {
+              destroyCookie(null, 'token');
+              destroyCookie(null, 'userId');
+            }}
+          >
+            Sair
+          </Link>
           <div>
             <input placeholder="Pesquisar no Orkut" />
           </div>
@@ -224,22 +232,28 @@ export function AlurakutProfileSidebarMenuDefault({
               <img src={`${BASE_URL}/icons/book.svg`} />
               Recados
             </Link>
-            <a href="/">
+            <Link href="/">
               <img src={`${BASE_URL}/icons/camera.svg`} />
               Fotos
-            </a>
-            <a href="/">
+            </Link>
+            <Link href="/">
               <img src={`${BASE_URL}/icons/sun.svg`} />
               Depoimentos
-            </a>
+            </Link>
           </nav>
           <hr />
           <nav>
-            <a href="/">
+            <Link href="/">
               <img src={`${BASE_URL}/icons/plus.svg`} />
               GitHub Trends
-            </a>
-            <Link href="/login" onClick={() => destroyCookie(null, 'token')}>
+            </Link>
+            <Link
+              href="/login"
+              onClick={() => {
+                destroyCookie(null, 'token');
+                destroyCookie(null, 'userId');
+              }}
+            >
               <img src={`${BASE_URL}//icons/logout.svg`} />
               Sair
             </Link>
