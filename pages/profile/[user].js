@@ -75,7 +75,10 @@ export default function Profile() {
             </p>
             <hr />
 
-            <AlurakutProfileSidebarMenuDefault githubUser={githubUser} />
+            <AlurakutProfileSidebarMenuDefault
+              githubUser={githubUser}
+              isFriendInfo
+            />
           </Box>
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>

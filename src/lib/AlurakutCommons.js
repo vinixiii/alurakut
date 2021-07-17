@@ -217,6 +217,7 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
 export function AlurakutProfileSidebarMenuDefault({
   githubUser,
   isCommunityInfo,
+  isFriendInfo,
   handleJoinCommunity,
 }) {
   return (
@@ -228,7 +229,9 @@ export function AlurakutProfileSidebarMenuDefault({
               <img src={`${BASE_URL}/icons/user.svg`} />
               Perfil
             </Link>
-            <Link href={`/scrapbook/${githubUser}`}>
+            <Link
+              href={isFriendInfo ? `/scrapbook/${githubUser}` : `/scrapbook`}
+            >
               <img src={`${BASE_URL}/icons/book.svg`} />
               Recados
             </Link>
@@ -260,7 +263,7 @@ export function AlurakutProfileSidebarMenuDefault({
           </nav>
         </>
       ) : (
-        <nav className="teste">
+        <nav>
           <button
             className="plusButton"
             onClick={(e) => handleJoinCommunity(e)}

@@ -42,6 +42,7 @@ export default function Login() {
         });
 
         router.push('/');
+        return;
       }
 
       setUserExist(false);

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import nookies from 'nookies';
 import jwt from 'jsonwebtoken';
 import {
@@ -12,18 +11,36 @@ import Box from '../../src/components/Box/index';
 import Scrap from '../../src/components/Scrap';
 
 export default function Scrapbook({ githubUser }) {
-  const [followers, setFollowers] = useState([]);
+  const [scraps, setScraps] = useState([]);
 
-  function getGithubFollowers() {
-    fetch(`https://api.github.com/users/${githubUser}/followers`)
+  function getScrapsFromDato() {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          allScraps(orderBy: createdAt_DESC) {
+            id,
+            username,
+            description,
+          }
+        }`,
+      }),
+    })
       .then((res) => res.json())
-      .then((data) => setFollowers(data))
-      .catch((error) => console.log(error));
+      .then((dataFromDato) => {
+        const scrapsFromDato = dataFromDato.data.allScraps;
+        setScraps(scrapsFromDato);
+      });
   }
 
   useEffect(() => {
-    getGithubFollowers();
-  }, [githubUser]);
+    getScrapsFromDato();
+  }, []);
 
   return (
     <>
@@ -55,34 +72,24 @@ export default function Scrapbook({ githubUser }) {
 
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <h1 className="title subPageTitle">Amigos</h1>
+            <h1 className="title subPageTitle">Recados ({scraps.length})</h1>
             <p className="pathSubtitle">
-              Início &#62; {githubUser} &#62; <span>Amigos</span>
+              Início &#62; <span>Recados</span>
             </p>
             <hr />
-            {followers.length < 1 ? (
-              <span className="noScrap">Não há amigos</span>
+            {scraps.length < 1 ? (
+              <span className="noScrap">Ainda não há recados</span>
             ) : (
               <ul>
-                {followers.map((follower) => {
+                {scraps.map((scrap) => {
                   return (
-                    <Scrap key={follower.id}>
-                      <Link href={`/profile/${follower.login}`} passHref>
-                        <a>
-                          <img
-                            src={`https://github.com/${follower.login}.png`}
-                          />
-                        </a>
-                      </Link>
+                    <Scrap key={scrap.id}>
+                      <a>
+                        <img src={`https://github.com/${scrap.username}.png`} />
+                      </a>
                       <div>
-                        <span>{follower.login}</span>
-                        <a
-                          className="githubLink"
-                          href={follower.html_url}
-                          target="_blank"
-                        >
-                          <p>{follower.html_url}</p>
-                        </a>
+                        <span>{scrap.username}</span>
+                        <p>{scrap.description}</p>
                       </div>
                     </Scrap>
                   );

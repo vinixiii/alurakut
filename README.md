@@ -1,84 +1,120 @@
-# Example app with styled-components
+<h1 align="center">
+  <img alt="askr" title="Pomo.up" src=".github/logo-alurakut.svg" width="220px" />
+</h1>
+<br>
+<br>
+<p align="center">
+  <img alt="askr" src=".github/alurakut.png" width="100%">
+</p>
+<br>
 
-This example features how you use a different styling solution than [styled-jsx](https://github.com/vercel/styled-jsx) that also supports universal styles. That means we can serve the required styles for the first render within the HTML and then load the rest in the client. In this case we are using [styled-components](https://github.com/styled-components/styled-components).
+## Sobre o projeto 💬
 
-For this purpose we are extending the `<Document />` and injecting the server side rendered styles into the `<head>`, and also adding the `babel-plugin-styled-components` (which is required for server side rendering). Additionally we set up a global [theme](https://www.styled-components.com/docs/advanced#theming) for styled-components using NextJS custom [`<App>`](https://nextjs.org/docs/advanced-features/custom-app) component.
+O **Alurakut** é uma aplicação web clone do nosso queridíssimo e já falecido Orkut, porém trazendo uma interface mais moderna e utilizando as melhores tecnologias de desenvolvimento!
 
-## Preview
+<!-- Ao logar na aplicação com nosso username do GitHub vamos para a página home, nela vemos nossos amigos (seguidores do GitHub), as comunidades que participamos, e os últimos recados deixados. Além disso é possível criar novas comunidades e novos recados! -->
 
-Preview the example live on [StackBlitz](http://stackblitz.com/):
+## Páginas 🔖
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-styled-components)
+Essa aplciação possui apenas uma página e um modal:
 
-## Deploy your own
+<h3 align="center">Home</h3>
+<p align="center">
+  <img alt="Cadastro" src=".github/profile.png" width="100%">
+</p>
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+<h3 align="center">Recados</h3>
+<p align="center">
+  <img alt="Cadastro" src=".github/scraps.png" width="100%">
+</p>
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-styled-components&project-name=with-styled-components&repository-name=with-styled-components)
+<h3 align="center">Amigos</h3>
+<p align="center">
+  <img alt="Cadastro" src=".github/friends.png" width="100%">
+</p>
 
-## How to use
+<h3 align="center">Perfil de amigo</h3>
+<p align="center">
+  <img alt="Cadastro" src=".github/friend-profile.png" width="100%">
+</p>
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+<h3 align="center">Comunidades</h3>
+<p align="center">
+  <img alt="Cadastro" src=".github/communities.png" width="100%">
+</p>
 
-```bash
-npx create-next-app --example with-styled-components with-styled-components-app
-# or
-yarn create next-app --example with-styled-components with-styled-components-app
-```
+<h3 align="center">Comunidade</h3>
+<p align="center">
+  <img alt="Cadastro" src=".github/community.png" width="100%">
+</p>
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+## Funcionalidades 🧠
 
-### Try it on CodeSandbox
+A aplicação contém todas as seguintes funcionalidades:
 
-[Open this example on CodeSandbox](https://codesandbox.io/s/github/vercel/next.js/tree/canary/examples/with-styled-components)
+- Logar com o username do GitHub
+- Exibir os amigos (seguidores do GitHub)
+- Criar uma nova comunidade
 
-### Notes
+### Funcionalidades extras:
 
-When wrapping a [Link](https://nextjs.org/docs/api-reference/next/link) from `next/link` within a styled-component, the [as](https://styled-components.com/docs/api#as-polymorphic-prop) prop provided by `styled` will collide with the Link's `as` prop and cause styled-components to throw an `Invalid tag` error. To avoid this, you can either use the recommended [forwardedAs](https://styled-components.com/docs/api#forwardedas-prop) prop from styled-components or use a different named prop to pass to a `styled` Link.
+- Página de perfil:
 
-<details>
-<summary>Click to expand workaround example</summary>
-<br />
+  - Ver amigos;
+  - Ver apenas as comunidades que participa;
+  - Ver os recados recentes;
+  - Deixar recados.
 
-**components/StyledLink.js**
+- Página de amigos:
 
-```javascript
-import Link from 'next/link'
-import styled from 'styled-components'
+  - Ver todos seus amigos;
+  - Clicar em um amigo para ir até seu perfil;
+  - Clicar no link abaixo do nome para ir até seu perfil no GitHub.
 
-const StyledLink = ({ as, children, className, href }) => (
-  <Link href={href} as={as} passHref>
-    <a className={className}>{children}</a>
-  </Link>
-)
+- Página de comunidades:
 
-export default styled(StyledLink)`
-  color: #0075e0;
-  text-decoration: none;
-  transition: all 0.2s ease-in-out;
+  - Ver todos as comunidades criadas;
+  - Clicar em uma comunidade para ir até sua página.
 
-  &:hover {
-    color: #40a9ff;
-  }
+- Página de comunidade específica:
 
-  &:focus {
-    color: #40a9ff;
-    outline: none;
-    border: 0;
-  }
-`
-```
+  - Ver informações da comunidade;
+  - Participar da comunidade.
 
-**pages/index.js**
+- Página de recados:
 
-```javascript
-import StyledLink from '../components/StyledLink'
+  - Ver todos os recados cadastrados.
 
-export default () => (
-  <StyledLink href="/post/[pid]" forwardedAs="/post/abc">
-    First post
-  </StyledLink>
-)
-```
+- Página de perfil de um amigo:
+  - Ver os amigos do amigo.
 
-</details>
+_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://alurakut-vinixii.vercel.app)_
+
+## Como utilizar? 📌
+
+Para utilizar a aplicação em sua máquina é necessário ter os seguintes softwares instalados:
+
+- [Node.js](https://nodejs.org/pt-br/)
+
+Com os software citados acima instalados, basta seguir os seguintes passos para executar a aplicação em sua máquina:
+
+1. **Clonar o projeto** <br>
+   Abra o terminal em uma pasta de sua preferência e cole o seguinte código: _`git clone https://github.com/vinixiii/alurakut`_
+
+2. **Instalar as depêndencias** <br>
+   Dentro do diretório do projeto, abra o terminal e cole o código: _`npm install`_ ou _`yarn`_
+
+_Ou acesse o **Alurakut** no seu navegador! [Clique aqui](https://alurakut-vinixii.vercel.app)_
+
+## Tecnologias 🛠
+
+Desenvolvido utilizando as seguintes tecnologias:
+
+- [React](https://reactjs.org)
+- [Next.js](https://www.typescriptlang.org/)
+- [DatoCMS](https://www.typescriptlang.org/)
+- [React-Toastify](https://www.typescriptlang.org/)
+
+---
+
+<p align="center">Feito com ❤ por: Vinícius Figueiroa 🙋🏻‍♂️</p>

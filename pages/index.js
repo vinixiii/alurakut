@@ -8,6 +8,9 @@ import {
   OrkutNostalgicIconSet,
 } from '../src/lib/AlurakutCommons';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import MainGrid from '../src/components/MainGrid/index';
 import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
@@ -15,6 +18,7 @@ import Scrap from '../src/components/Scrap';
 
 export default function Home({ githubUser }) {
   const [githubUserId, setGithubUserId] = useState('');
+  const [userName, setUserName] = useState('');
 
   const [isShowingMoreFollowers, setIsShowingMoreFollowers] = useState(false);
   const [isShowingMoreCommunities, setIsShowingMoreCommunities] =
@@ -23,6 +27,18 @@ export default function Home({ githubUser }) {
   const [followers, setFollowers] = useState([]);
   const [communities, setCommunities] = useState([]);
   const [scraps, setScraps] = useState([]);
+  const [formOption, setFormOption] = useState(0);
+
+  const [communityTitle, setCommunityTitle] = useState('');
+  const [communityImage, setCommunityImage] = useState('');
+  const [description, setDescription] = useState('');
+
+  function getGithubName() {
+    fetch(`https://api.github.com/users/${githubUser}`)
+      .then((res) => res.json())
+      .then((data) => setUserName(data.name))
+      .catch((error) => console.log(error));
+  }
 
   function getGithubFollowers() {
     fetch(`https://api.github.com/users/${githubUser}/followers`)
@@ -74,7 +90,6 @@ export default function Home({ githubUser }) {
             id,
             title,
             imageUrl,
-            link,
             creatorSlug
           }
         }`,
@@ -97,7 +112,7 @@ export default function Home({ githubUser }) {
       },
       body: JSON.stringify({
         query: `query {
-          allScraps {
+          allScraps(orderBy: createdAt_DESC) {
             id,
             username,
             description,
@@ -116,17 +131,29 @@ export default function Home({ githubUser }) {
     getGithubFollowers();
     getMyUserInfoFromDato();
     getScrapsFromDato();
+    getGithubName();
   }, []);
 
   function handleCreateCommunity(e) {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
+    if (communityTitle === '' || communityImage === '') {
+      toast.warn('Preencha todos os campos! 👀', {
+        position: 'bottom-right',
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      return;
+    }
 
     const community = {
-      title: formData.get('title'),
-      imageUrl: formData.get('image'),
-      link: formData.get('link'),
+      title: communityTitle,
+      imageUrl: communityImage,
       creatorSlug: githubUser,
       users: [`${githubUserId}`],
     };
@@ -144,6 +171,42 @@ export default function Home({ githubUser }) {
     });
   }
 
+  function handleCreateScrap(e) {
+    e.preventDefault();
+
+    if (description === '') {
+      toast.warn('Preencha o campo antes de enviar! 👀', {
+        position: 'bottom-right',
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      return;
+    }
+
+    const newScrap = {
+      username: githubUser,
+      description: description,
+    };
+
+    fetch('/api/scraps', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newScrap),
+    }).then(async (res) => {
+      const data = await res.json();
+      const scrapCreated = data.recordCreated;
+      setScraps([...scraps, scrapCreated]);
+      setDescription('');
+    });
+  }
+
   function handleShowMoreFollowers(e) {
     e.preventDefault();
     setIsShowingMoreFollowers(!isShowingMoreFollowers);
@@ -153,6 +216,8 @@ export default function Home({ githubUser }) {
     e.preventDefault();
     setIsShowingMoreCommunities(!isShowingMoreCommunities);
   }
+
+  console.log(communityTitle);
 
   return (
     <>
@@ -183,7 +248,7 @@ export default function Home({ githubUser }) {
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <h1 className="title">Bem-vindo(a)</h1>
+            <h1 className="title subPageTitle">Bem-vindo(a), {userName}</h1>
             <OrkutNostalgicIconSet
               recados={scraps.length}
               confiavel={3}
@@ -194,34 +259,50 @@ export default function Home({ githubUser }) {
 
           <Box>
             <h2 className="subTitle">O que você deseja fazer?</h2>
-            <form onSubmit={(e) => handleCreateCommunity(e)}>
-              <div>
-                <input
-                  placeholder="Digite um nome para sua comunidade"
-                  name="title"
-                  aria-label="Digite um nome para sua comunidade"
-                  type="text"
-                />
-              </div>
-              <div>
-                <input
-                  placeholder="Insira uma URL para usar como imagem de capa"
-                  name="image"
-                  aria-label="Insira uma URL para usar como imagem de capa"
-                  type="text"
-                />
-              </div>
-              <div>
-                <input
-                  placeholder="Insira um link para sua comunidade"
-                  name="link"
-                  aria-label="Insira um link para sua comunidade"
-                  type="text"
-                />
-              </div>
+            <div className="optionButtons">
+              <button onClick={() => setFormOption(0)}>Criar comunidade</button>
+              <button onClick={() => setFormOption(1)}>Deixar um recado</button>
+            </div>
+            {formOption === 0 ? (
+              <form onSubmit={(e) => handleCreateCommunity(e)}>
+                <div>
+                  <input
+                    placeholder="Digite um nome para sua comunidade"
+                    value={communityTitle}
+                    onChange={(e) => setCommunityTitle(e.target.value)}
+                    aria-label="Digite um nome para sua comunidade"
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <input
+                    placeholder="Insira uma URL para usar como imagem de capa"
+                    value={communityImage}
+                    onChange={(e) => setCommunityImage(e.target.value)}
+                    aria-label="Insira uma URL para usar como imagem de capa"
+                    type="text"
+                  />
+                </div>
 
-              <button>Criar comunidade</button>
-            </form>
+                <button>Criar comunidade</button>
+              </form>
+            ) : (
+              <form onSubmit={(e) => handleCreateScrap(e)}>
+                <div>
+                  <textarea
+                    placeholder="Digite seu recado aqui..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    aria-label="Digite seu recado aqui"
+                    type="text"
+                    autoComplete="off"
+                    // required
+                  />
+                </div>
+
+                <button>Enviar recado</button>
+              </form>
+            )}
           </Box>
           {scraps.length > 0 && (
             <Box>
@@ -312,6 +393,7 @@ export default function Home({ githubUser }) {
           </ProfileRelationsBoxWrapper>
         </div>
       </MainGrid>
+      <ToastContainer />
     </>
   );
 }

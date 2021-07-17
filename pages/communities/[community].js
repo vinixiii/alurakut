@@ -2,24 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
   OrkutNostalgicIconSet,
 } from '../../src/lib/AlurakutCommons';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import MainGrid from '../../src/components/MainGrid';
 import Box from '../../src/components/Box';
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations';
 import InfoBox from '../../src/components/InfoBox';
 
-export default function Community() {
+export default function Community({ githubUser }) {
   const router = useRouter();
   const { community } = router.query;
+  const communityId = community;
 
-  const [communityId, setCommunityId] = useState(community);
-  const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
+  const [githubUserId, setGithubUserId] = useState('');
+
   const [members, setMembers] = useState([]);
   const [communityInfo, setCommunityInfo] = useState({});
+  const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
 
   function getCommunityInfoFromDato() {
     fetch('https://graphql.datocms.com/', {
@@ -59,13 +66,40 @@ export default function Community() {
       });
   }
 
+  function getMyUserInfoFromDato() {
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          user(filter: {username: {eq: "${githubUser}"}}) {
+            id
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .then(async (dataFromDato) => {
+        const userId = await dataFromDato.data.user.id;
+        setGithubUserId(userId);
+      });
+  }
+
+  useEffect(() => {
+    getMyUserInfoFromDato();
+    getCommunityInfoFromDato();
+  }, []);
+
   function handleJoinCommunity(e) {
     e.preventDefault();
 
-    const cookies = nookies.get();
+    // const cookies = nookies.get();
 
-    const alreadyMember = members.filter((x) => x.id == cookies.userId);
-    console.log(alreadyMember);
+    const alreadyMember = members.filter((x) => x.id == githubUserId);
 
     if (alreadyMember < 1) {
       fetch('/api/updateCommunity', {
@@ -74,7 +108,7 @@ export default function Community() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: cookies.userId,
+          userId: githubUserId,
           communityId: communityId,
         }),
       }).then(() => {
@@ -84,12 +118,16 @@ export default function Community() {
       return;
     }
 
-    alert('Você já participa desta comunidade!');
+    toast.warn('Você já participa desta comunidade! 👀', {
+      position: 'bottom-right',
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   }
-
-  useEffect(() => {
-    getCommunityInfoFromDato();
-  }, [communityId]);
 
   function handleShowMoreMembers(e) {
     e.preventDefault();
@@ -191,12 +229,19 @@ export default function Community() {
           </ProfileRelationsBoxWrapper>
         </div>
       </MainGrid>
+      <ToastContainer />
     </>
   );
 }
 
 export async function getServerSideProps(context) {
+  const userToken = await nookies.get(context).token;
+
+  const { githubUser } = jwt.decode(userToken);
+
   return {
-    props: {},
+    props: {
+      githubUser: githubUser,
+    },
   };
 }

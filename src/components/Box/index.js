@@ -112,6 +112,12 @@ const Box = styled.div`
     font-size: 13.33px;
   }
 
+  .optionButtons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
   .communityImg {
     width: 128px;
   }

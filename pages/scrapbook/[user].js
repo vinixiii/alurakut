@@ -5,6 +5,9 @@ import {
   AlurakutProfileSidebarMenuDefault,
 } from '../../src/lib/AlurakutCommons';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import MainGrid from '../../src/components/MainGrid/index';
 import Box from '../../src/components/Box/index';
 import Scrap from '../../src/components/Scrap';
@@ -27,58 +30,20 @@ export default function Scrapbook() {
       .catch((error) => console.log(error));
   }
 
-  function getDataFromDato() {
-    fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          allScraps {
-            id,
-            username,
-            description,
-          }
-        }`,
-      }),
-    })
-      .then((res) => res.json())
-      .then((dataFromDato) => {
-        const scrapsFromDato = dataFromDato.data.allScraps;
-        setScraps(scrapsFromDato);
-      });
-  }
-
   useEffect(() => {
     getGithubName();
-    getDataFromDato();
-  }, [githubUser]);
+  }, []);
 
   function handleCreateScrap(e) {
     e.preventDefault();
-
-    const formData = new FormData(e.target);
-
-    const newScrap = {
-      username: username,
-      description: description,
-    };
-
-    fetch('/api/scraps', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newScrap),
-    }).then(async (res) => {
-      const data = await res.json();
-      const scrapCreated = data.recordCreated;
-      setScraps([...scraps, scrapCreated]);
-      setUsername('');
-      setDescription('');
+    toast.info('Funcionalidade em desenvolvimento! 👀', {
+      position: 'bottom-right',
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
     });
   }
 
@@ -106,24 +71,16 @@ export default function Scrapbook() {
             </p>
             <hr />
 
-            <AlurakutProfileSidebarMenuDefault githubUser={githubUser} />
+            <AlurakutProfileSidebarMenuDefault
+              githubUser={githubUser}
+              isFriendInfo
+            />
           </Box>
         </div>
 
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
             <form onSubmit={(e) => handleCreateScrap(e)}>
-              <div>
-                <input
-                  placeholder="Digite seu username do GitHub"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  aria-label="Digite seu username do GitHub"
-                  type="text"
-                  autoComplete="off"
-                  required
-                />
-              </div>
               <div>
                 <textarea
                   placeholder="Deixe um recado para este usuário"
@@ -132,7 +89,7 @@ export default function Scrapbook() {
                   aria-label="Deixe um recado para vinixiii"
                   type="text"
                   autoComplete="off"
-                  required
+                  // required
                 />
               </div>
 
@@ -173,6 +130,7 @@ export default function Scrapbook() {
           </Box>
         </div>
       </MainGrid>
+      <ToastContainer />
     </>
   );
 }
