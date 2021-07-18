@@ -128,10 +128,10 @@ export default function Home({ githubUser }) {
   }
 
   useEffect(() => {
+    getGithubName();
     getGithubFollowers();
     getMyUserInfoFromDato();
     getScrapsFromDato();
-    getGithubName();
   }, []);
 
   function handleCreateCommunity(e) {
@@ -367,6 +367,7 @@ export default function Home({ githubUser }) {
             </h2>
             <ul>
               {communities.map((item) => {
+                console.log(item.id);
                 return (
                   <li key={item.id}>
                     <Link href={`/communities/${item.id}`} passHref>

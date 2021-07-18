@@ -23,10 +23,9 @@ export default function Community({ githubUser }) {
   const communityId = community;
 
   const [githubUserId, setGithubUserId] = useState('');
-
+  const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
   const [members, setMembers] = useState([]);
   const [communityInfo, setCommunityInfo] = useState({});
-  const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
 
   function getCommunityInfoFromDato() {
     fetch('https://graphql.datocms.com/', {
@@ -41,7 +40,6 @@ export default function Community({ githubUser }) {
           community(filter: {id: {eq: "${communityId}"}}) {
             title,
             imageUrl,
-            link,
             creatorSlug,
             createdAt,
             users {

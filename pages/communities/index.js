@@ -28,7 +28,6 @@ export default function Communities({ githubUser }) {
             id,
             title,
             imageUrl,
-            link,
             creatorSlug
           }
         }`,
