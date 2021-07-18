@@ -96,7 +96,7 @@ A aplicação contém as seguintes funcionalidades:
   <img alt="Cadastro" src=".github/scraps.png" width="100%">
 </p>
 
-_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://alurakut-vinixii.vercel.app)_
+_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://www.linkedin.com/feed/update/urn:li:activity:6822353102180507648/)_
 
 ## Como utilizar? 📌
 
