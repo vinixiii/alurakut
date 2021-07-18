@@ -99,11 +99,14 @@ export default function Scrapbook({ githubUser }) {
 export async function getServerSideProps(context) {
   const userToken = await nookies.get(context).token;
 
-  const { isAuthenticated } = await fetch('http://localhost:3000/api/auth', {
-    headers: {
-      Authorization: userToken,
-    },
-  }).then((res) => res.json());
+  const { isAuthenticated } = await fetch(
+    'https://alurakut-vinixiii.vercel.app/api/auth',
+    {
+      headers: {
+        Authorization: userToken,
+      },
+    }
+  ).then((res) => res.json());
 
   if (!isAuthenticated) {
     return {

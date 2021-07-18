@@ -25,7 +25,7 @@ export default function Login() {
       const data = await res.json();
 
       const { isAuthenticated } = await fetch(
-        'http://localhost:3000/api/auth',
+        'https://alurakut-vinixiii.vercel.app/api/auth',
         {
           headers: {
             Authorization: data.token,
