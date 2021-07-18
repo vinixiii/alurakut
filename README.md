@@ -16,79 +16,87 @@ O **Alurakut** é uma aplicação web clone do nosso queridíssimo e já falecid
 
 ## Páginas 🔖
 
-Essa aplciação possui apenas uma página e um modal:
+- [Login](#página-de-login)
+- [Perfil](#página-de-perfil)
+- [Amigos](#página-de-amigos)
+- [Perfil de amigo](#página-de-perfil-de-amigo)
+- [Comunidades](#página-de-comunidades)
+- [Comunidade](#página-de-comunidade)
+- [Recados](#página-de-recados)
 
-<h3 align="center">Home</h3>
+## Funcionalidades 🧠
+
+A aplicação contém as seguintes funcionalidades:
+
+### Página de Login
+
+- Fazer login com o username do GitHub.
+
+<p align="center">
+  <img alt="Cadastro" src=".github/login.png" width="100%">
+</p>
+
+### Página de perfil
+
+- Ver amigos (seguidores do GitHub);
+- Ir até o perfil de amigos;
+- Ver as comunidades que participa;
+- Ir até a página da comunidade;
+- Criar uma nova comunidade;
+- Ver os recados recentes;
+- Deixar novos recados;
+- Fazer logout.
+
 <p align="center">
   <img alt="Cadastro" src=".github/profile.png" width="100%">
 </p>
 
-<h3 align="center">Recados</h3>
-<p align="center">
-  <img alt="Cadastro" src=".github/scraps.png" width="100%">
-</p>
+### Página de amigos
 
-<h3 align="center">Amigos</h3>
+- Ver todos seus amigos (seguidores do GitHub);
+- Clicar em um amigo para ir até seu perfil;
+- Clicar no link abaixo do username para ir até seu perfil no GitHub.
+
 <p align="center">
   <img alt="Cadastro" src=".github/friends.png" width="100%">
 </p>
 
-<h3 align="center">Perfil de amigo</h3>
+### Página de perfil de amigo
+
+- Ver as informações do amigo, incluindo seus amigos (seguidores do GitHub).
+- Ver os amigos do amigo.
+
 <p align="center">
   <img alt="Cadastro" src=".github/friend-profile.png" width="100%">
 </p>
 
-<h3 align="center">Comunidades</h3>
+### Página de comunidades
+
+- Ver todos as comunidades criadas;
+- Clicar em uma comunidade para ir até sua página.
+
 <p align="center">
   <img alt="Cadastro" src=".github/communities.png" width="100%">
 </p>
 
-<h3 align="center">Comunidade</h3>
+### Página de comunidade
+
+- Ver informações da comunidade;
+- Participar da comunidade.
+
 <p align="center">
   <img alt="Cadastro" src=".github/community.png" width="100%">
 </p>
 
-## Funcionalidades 🧠
+### Página de recados
 
-A aplicação contém todas as seguintes funcionalidades:
+- Ver todos os recados cadastrados.
 
-- Logar com o username do GitHub
-- Exibir os amigos (seguidores do GitHub)
-- Criar uma nova comunidade
+<p align="center">
+  <img alt="Cadastro" src=".github/scraps.png" width="100%">
+</p>
 
-### Funcionalidades extras:
-
-- Página de perfil:
-
-  - Ver amigos;
-  - Ver apenas as comunidades que participa;
-  - Ver os recados recentes;
-  - Deixar recados.
-
-- Página de amigos:
-
-  - Ver todos seus amigos;
-  - Clicar em um amigo para ir até seu perfil;
-  - Clicar no link abaixo do nome para ir até seu perfil no GitHub.
-
-- Página de comunidades:
-
-  - Ver todos as comunidades criadas;
-  - Clicar em uma comunidade para ir até sua página.
-
-- Página de comunidade específica:
-
-  - Ver informações da comunidade;
-  - Participar da comunidade.
-
-- Página de recados:
-
-  - Ver todos os recados cadastrados.
-
-- Página de perfil de um amigo:
-  - Ver os amigos do amigo.
-
-_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://www.linkedin.com/feed/update/urn:li:activity:6822353102180507648/)_
+_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://alurakut-vinixii.vercel.app)_
 
 ## Como utilizar? 📌
 
@@ -100,10 +108,13 @@ Com os software citados acima instalados, basta seguir os seguintes passos para 
 
 1. **Clonar o projeto** <br>
    Abra o terminal em uma pasta de sua preferência e cole o seguinte código: 
+   
    _`git clone https://github.com/vinixiii/alurakut`_
 
 2. **Instalar as depêndencias** <br>
-   Dentro do diretório do projeto, abra o terminal e cole o código: _`npm install`_ ou _`yarn`_
+   Dentro do diretório do projeto, abra o terminal e cole o código: 
+   
+   _`npm install`_ ou _`yarn`_
 
 _Ou acesse o **Alurakut** no seu navegador! [Clique aqui](https://alurakut-vinixiii.vercel.app)_
 
