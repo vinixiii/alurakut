@@ -88,7 +88,7 @@ A aplicação contém todas as seguintes funcionalidades:
 - Página de perfil de um amigo:
   - Ver os amigos do amigo.
 
-_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://alurakut-vinixii.vercel.app)_
+_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://www.linkedin.com/feed/update/urn:li:activity:6822353102180507648/)_
 
 ## Como utilizar? 📌
 
@@ -99,21 +99,22 @@ Para utilizar a aplicação em sua máquina é necessário ter os seguintes soft
 Com os software citados acima instalados, basta seguir os seguintes passos para executar a aplicação em sua máquina:
 
 1. **Clonar o projeto** <br>
-   Abra o terminal em uma pasta de sua preferência e cole o seguinte código: _`git clone https://github.com/vinixiii/alurakut`_
+   Abra o terminal em uma pasta de sua preferência e cole o seguinte código: 
+   _`git clone https://github.com/vinixiii/alurakut`_
 
 2. **Instalar as depêndencias** <br>
    Dentro do diretório do projeto, abra o terminal e cole o código: _`npm install`_ ou _`yarn`_
 
-_Ou acesse o **Alurakut** no seu navegador! [Clique aqui](https://alurakut-vinixii.vercel.app)_
+_Ou acesse o **Alurakut** no seu navegador! [Clique aqui](https://alurakut-vinixiii.vercel.app)_
 
 ## Tecnologias 🛠
 
 Desenvolvido utilizando as seguintes tecnologias:
 
 - [React](https://reactjs.org)
-- [Next.js](https://www.typescriptlang.org/)
-- [DatoCMS](https://www.typescriptlang.org/)
-- [React-Toastify](https://www.typescriptlang.org/)
+- [Next.js](https://nextjs.org/)
+- [DatoCMS](https://www.datocms.com/)
+- [React-Toastify](https://www.npmjs.com/package/react-toastify)
 
 ---
 
