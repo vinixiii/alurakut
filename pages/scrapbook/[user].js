@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import nookies from 'nookies';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
@@ -11,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import MainGrid from '../../src/components/MainGrid/index';
 import Box from '../../src/components/Box/index';
 import Scrap from '../../src/components/Scrap';
+import { useCheckAuth } from '../../src/hooks/useCheckAuth';
 
 export default function Scrapbook() {
   const router = useRouter();
@@ -27,7 +29,7 @@ export default function Scrapbook() {
     fetch(`https://api.github.com/users/${githubUser}`)
       .then((res) => res.json())
       .then((data) => setUserName(data.name))
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   }
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function Scrapbook() {
     toast.info('Funcionalidade em desenvolvimento! 👀', {
       position: 'bottom-right',
       autoClose: 4000,
-      hideProgressBar: false,
+      hideProgressBar: true,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
@@ -130,7 +132,26 @@ export default function Scrapbook() {
           </Box>
         </div>
       </MainGrid>
-      <ToastContainer />
+      <ToastContainer newestOnTop />
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const userToken = await nookies.get(context).token;
+
+  const isAuthenticated = await useCheckAuth(userToken);
+
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanet: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 }

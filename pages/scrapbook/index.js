@@ -9,6 +9,7 @@ import {
 import MainGrid from '../../src/components/MainGrid/index';
 import Box from '../../src/components/Box/index';
 import Scrap from '../../src/components/Scrap';
+import { useCheckAuth } from '../../src/hooks/useCheckAuth';
 
 export default function Scrapbook({ githubUser }) {
   const [scraps, setScraps] = useState([]);
@@ -106,14 +107,7 @@ export default function Scrapbook({ githubUser }) {
 export async function getServerSideProps(context) {
   const userToken = await nookies.get(context).token;
 
-  const { isAuthenticated } = await fetch(
-    'https://alurakut-vinixiii.vercel.app/api/auth',
-    {
-      headers: {
-        Authorization: userToken,
-      },
-    }
-  ).then((res) => res.json());
+  const isAuthenticated = await useCheckAuth(userToken);
 
   if (!isAuthenticated) {
     return {

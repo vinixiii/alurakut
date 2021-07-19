@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import nookies from 'nookies';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
@@ -10,6 +11,7 @@ import MainGrid from '../../src/components/MainGrid';
 import Box from '../../src/components/Box';
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations';
 import InfoBox from '../../src/components/InfoBox';
+import { useCheckAuth } from '../../src/hooks/useCheckAuth';
 
 export default function Profile() {
   const router = useRouter();
@@ -35,7 +37,7 @@ export default function Profile() {
           createdAt: data.created_at,
         })
       )
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   }
 
   function getGithubFollowers() {
@@ -179,6 +181,19 @@ export default function Profile() {
 }
 
 export async function getServerSideProps(context) {
+  const userToken = await nookies.get(context).token;
+
+  const isAuthenticated = await useCheckAuth(userToken);
+
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanet: false,
+      },
+    };
+  }
+
   return {
     props: {},
   };

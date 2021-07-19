@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import NextLink from 'next/link';
 import { destroyCookie } from 'nookies';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const BASE_URL = 'http://alurakut.vercel.app/';
@@ -229,7 +229,7 @@ export function AlurakutProfileSidebarMenuDefault({
     toast.info('Funcionalidade em desenvolvimento! 👀', {
       position: 'bottom-right',
       autoClose: 4000,
-      hideProgressBar: false,
+      hideProgressBar: true,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
@@ -278,7 +278,6 @@ export function AlurakutProfileSidebarMenuDefault({
               Sair
             </Link>
           </nav>
-          <ToastContainer />
         </>
       ) : (
         <nav>

@@ -16,6 +16,7 @@ import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import Scrap from '../src/components/Scrap';
 import InfoBox from '../src/components/InfoBox';
+import { useCheckAuth } from '../src/hooks/useCheckAuth';
 
 export default function Home({ githubUser }) {
   const [githubUserId, setGithubUserId] = useState('');
@@ -48,14 +49,14 @@ export default function Home({ githubUser }) {
           createdAt: data.created_at,
         })
       )
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   }
 
   function getGithubFollowers() {
     fetch(`https://api.github.com/users/${githubUser}/followers`)
       .then((res) => res.json())
       .then((data) => setFollowers(data))
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   }
 
   function getMyUserInfoFromDato() {
@@ -152,7 +153,7 @@ export default function Home({ githubUser }) {
       toast.warn('Preencha todos os campos! 👀', {
         position: 'bottom-right',
         autoClose: 4000,
-        hideProgressBar: false,
+        hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
@@ -188,7 +189,7 @@ export default function Home({ githubUser }) {
         toast.success('Comunidade criada! 🎉', {
           position: 'bottom-right',
           autoClose: 4000,
-          hideProgressBar: false,
+          hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
@@ -205,7 +206,7 @@ export default function Home({ githubUser }) {
       toast.warn('Preencha o campo antes de enviar! 👀', {
         position: 'bottom-right',
         autoClose: 4000,
-        hideProgressBar: false,
+        hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
@@ -239,7 +240,7 @@ export default function Home({ githubUser }) {
       toast.success('Recado enviado! 🎉', {
         position: 'bottom-right',
         autoClose: 4000,
-        hideProgressBar: false,
+        hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
@@ -257,8 +258,6 @@ export default function Home({ githubUser }) {
     e.preventDefault();
     setIsShowingMoreCommunities(!isShowingMoreCommunities);
   }
-
-  console.log(communityTitle);
 
   return (
     <>
@@ -435,7 +434,6 @@ export default function Home({ githubUser }) {
             </h2>
             <ul>
               {communities.map((item) => {
-                console.log(item.id);
                 return (
                   <li key={item.id}>
                     <Link href={`/communities/${item.id}`} passHref>
@@ -462,7 +460,7 @@ export default function Home({ githubUser }) {
           </ProfileRelationsBoxWrapper>
         </div>
       </MainGrid>
-      <ToastContainer />
+      <ToastContainer newestOnTop />
     </>
   );
 }
@@ -470,14 +468,7 @@ export default function Home({ githubUser }) {
 export async function getServerSideProps(context) {
   const userToken = await nookies.get(context).token;
 
-  const { isAuthenticated } = await fetch(
-    'https://alurakut-vinixiii.vercel.app/api/auth',
-    {
-      headers: {
-        Authorization: userToken,
-      },
-    }
-  ).then((res) => res.json());
+  const isAuthenticated = await useCheckAuth(userToken);
 
   if (!isAuthenticated) {
     return {

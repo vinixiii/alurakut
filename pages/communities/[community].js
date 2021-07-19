@@ -16,6 +16,7 @@ import MainGrid from '../../src/components/MainGrid';
 import Box from '../../src/components/Box';
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations';
 import InfoBox from '../../src/components/InfoBox';
+import { useCheckAuth } from '../../src/hooks/useCheckAuth';
 
 export default function Community({ githubUser }) {
   const router = useRouter();
@@ -119,7 +120,7 @@ export default function Community({ githubUser }) {
     toast.warn('Você já participa desta comunidade! 👀', {
       position: 'bottom-right',
       autoClose: 4000,
-      hideProgressBar: false,
+      hideProgressBar: true,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
@@ -227,13 +228,24 @@ export default function Community({ githubUser }) {
           </ProfileRelationsBoxWrapper>
         </div>
       </MainGrid>
-      <ToastContainer />
+      <ToastContainer newestOnTop />
     </>
   );
 }
 
 export async function getServerSideProps(context) {
   const userToken = await nookies.get(context).token;
+
+  const isAuthenticated = await useCheckAuth(userToken);
+
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanet: false,
+      },
+    };
+  }
 
   const { githubUser } = jwt.decode(userToken);
 

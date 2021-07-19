@@ -18,9 +18,6 @@ export default async function getRequests(req, res) {
       },
     });
 
-    console.log(userId);
-    console.log(communityId);
-
     const record = await client.items.update(itemId, {
       users: [...members[0].users, userId],
     });
