@@ -15,10 +15,11 @@ import MainGrid from '../src/components/MainGrid/index';
 import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import Scrap from '../src/components/Scrap';
+import InfoBox from '../src/components/InfoBox';
 
 export default function Home({ githubUser }) {
   const [githubUserId, setGithubUserId] = useState('');
-  const [userName, setUserName] = useState('');
+  const [userInfo, setUserInfo] = useState({});
 
   const [isShowingMoreFollowers, setIsShowingMoreFollowers] = useState(false);
   const [isShowingMoreCommunities, setIsShowingMoreCommunities] =
@@ -33,10 +34,20 @@ export default function Home({ githubUser }) {
   const [communityImage, setCommunityImage] = useState('');
   const [description, setDescription] = useState('');
 
-  function getGithubName() {
+  const [isCreatingCommunity, setIsCreatingCommunity] = useState(false);
+  const [isCreatingScrap, setIsCreatingScrap] = useState(false);
+
+  function getGithubUserInfo() {
     fetch(`https://api.github.com/users/${githubUser}`)
       .then((res) => res.json())
-      .then((data) => setUserName(data.name))
+      .then((data) =>
+        setUserInfo({
+          name: data.name,
+          bio: data.bio,
+          location: data.location,
+          createdAt: data.created_at,
+        })
+      )
       .catch((error) => console.log(error));
   }
 
@@ -128,7 +139,7 @@ export default function Home({ githubUser }) {
   }
 
   useEffect(() => {
-    getGithubName();
+    getGithubUserInfo();
     getGithubFollowers();
     getMyUserInfoFromDato();
     getScrapsFromDato();
@@ -151,6 +162,8 @@ export default function Home({ githubUser }) {
       return;
     }
 
+    setIsCreatingCommunity(true);
+
     const community = {
       title: communityTitle,
       imageUrl: communityImage,
@@ -164,11 +177,25 @@ export default function Home({ githubUser }) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(community),
-    }).then(async (res) => {
-      const data = await res.json();
-      const communityCreated = data.recordCreated;
-      setCommunities([...communities, communityCreated]);
-    });
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        const communityCreated = data.recordCreated;
+        setCommunities([...communities, communityCreated]);
+
+        setIsCreatingCommunity(false);
+
+        toast.success('Comunidade criada! 🎉', {
+          position: 'bottom-right',
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+      .catch((err) => console.error(err));
   }
 
   function handleCreateScrap(e) {
@@ -188,6 +215,8 @@ export default function Home({ githubUser }) {
       return;
     }
 
+    setIsCreatingScrap(true);
+
     const newScrap = {
       username: githubUser,
       description: description,
@@ -204,6 +233,18 @@ export default function Home({ githubUser }) {
       const scrapCreated = data.recordCreated;
       setScraps([...scraps, scrapCreated]);
       setDescription('');
+
+      setIsCreatingScrap(false);
+
+      toast.success('Recado enviado! 🎉', {
+        position: 'bottom-right',
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     });
   }
 
@@ -248,13 +289,30 @@ export default function Home({ githubUser }) {
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <h1 className="title subPageTitle">Bem-vindo(a), {userName}</h1>
+            <h1 className="title subPageTitle">
+              Bem-vindo(a), {userInfo.name}
+            </h1>
+            <span className="bio">{userInfo.bio}</span>
+
             <OrkutNostalgicIconSet
               recados={scraps.length}
               confiavel={3}
               legal={3}
               sexy={2}
             />
+
+            <InfoBox>
+              <tbody>
+                <tr>
+                  <td className="textOnRight">localização:</td>
+                  <td>{userInfo.location}</td>
+                </tr>
+                <tr>
+                  <td className="textOnRight">membro desde:</td>
+                  <td>{new Date(userInfo.createdAt).toLocaleDateString()}</td>
+                </tr>
+              </tbody>
+            </InfoBox>
           </Box>
 
           <Box>
@@ -284,7 +342,12 @@ export default function Home({ githubUser }) {
                   />
                 </div>
 
-                <button>Criar comunidade</button>
+                <button
+                  type="submit"
+                  disabled={!isCreatingCommunity ? '' : 'false'}
+                >
+                  {isCreatingCommunity ? 'Criando...' : 'Criar comunidade'}
+                </button>
               </form>
             ) : (
               <form onSubmit={(e) => handleCreateScrap(e)}>
@@ -300,7 +363,12 @@ export default function Home({ githubUser }) {
                   />
                 </div>
 
-                <button>Enviar recado</button>
+                <button
+                  type="submit"
+                  disabled={!isCreatingScrap ? '' : 'false'}
+                >
+                  {isCreatingScrap ? 'Enviando...' : 'Enviar recado'}
+                </button>
               </form>
             )}
           </Box>

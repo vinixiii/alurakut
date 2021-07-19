@@ -3,6 +3,9 @@ import styled, { css } from 'styled-components';
 import NextLink from 'next/link';
 import { destroyCookie } from 'nookies';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const BASE_URL = 'http://alurakut.vercel.app/';
 const v = '1';
 
@@ -220,6 +223,20 @@ export function AlurakutProfileSidebarMenuDefault({
   isFriendInfo,
   handleJoinCommunity,
 }) {
+  function handleShowDevelopmentInfo(e) {
+    e.preventDefault();
+
+    toast.info('Funcionalidade em desenvolvimento! 👀', {
+      position: 'bottom-right',
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+
   return (
     <AlurakutProfileSidebarMenuDefault.Wrapper>
       {!isCommunityInfo ? (
@@ -235,18 +252,18 @@ export function AlurakutProfileSidebarMenuDefault({
               <img src={`${BASE_URL}/icons/book.svg`} />
               Recados
             </Link>
-            <Link href="/">
+            <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
               <img src={`${BASE_URL}/icons/camera.svg`} />
               Fotos
             </Link>
-            <Link href="/">
+            <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
               <img src={`${BASE_URL}/icons/sun.svg`} />
               Depoimentos
             </Link>
           </nav>
           <hr />
           <nav>
-            <Link href="/">
+            <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
               <img src={`${BASE_URL}/icons/plus.svg`} />
               GitHub Trends
             </Link>
@@ -261,6 +278,7 @@ export function AlurakutProfileSidebarMenuDefault({
               Sair
             </Link>
           </nav>
+          <ToastContainer />
         </>
       ) : (
         <nav>
@@ -383,7 +401,7 @@ export function OrkutNostalgicIconSet(props) {
   );
 }
 OrkutNostalgicIconSet.List = styled.ul`
-  margin-top: 32px;
+  margin-top: 24px;
   list-style: none;
   display: flex;
   justify-content: space-between;

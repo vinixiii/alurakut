@@ -121,6 +121,15 @@ const Box = styled.div`
   .communityImg {
     width: 128px;
   }
+
+  .bio {
+    width: 100%;
+    display: block;
+    text-align: left;
+    color: #a5a5af;
+    border: 1px solid #e0e3ed;
+    padding: 8px;
+  }
 `;
 
 export default Box;

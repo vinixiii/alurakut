@@ -3,6 +3,7 @@ import styled from 'styled-components';
 const InfoBox = styled.table`
   width: 100%;
   border-spacing: 0;
+  margin-top: 24px;
 
   /* &:first-child {
     margin-top: 24px;
@@ -28,6 +29,7 @@ const InfoBox = styled.table`
 
   .textOnRight {
     text-align: right;
+    width: 50%;
   }
 `;
 

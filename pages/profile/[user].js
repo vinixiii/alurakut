@@ -9,19 +9,34 @@ import {
 import MainGrid from '../../src/components/MainGrid';
 import Box from '../../src/components/Box';
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations';
+import InfoBox from '../../src/components/InfoBox';
 
 export default function Profile() {
   const router = useRouter();
   const { user } = router.query;
 
   const githubUser = user;
-  const [profileUserName, setProfileUserName] = useState('');
+  const [userInfo, setUserInfo] = useState({});
   const [isShowingMoreFollowers, setIsShowingMoreFollowers] = useState(false);
   const [isShowingMoreCommunities, setIsShowingMoreCommunities] =
     useState(false);
 
   const [followers, setFollowers] = useState([]);
   const communities = [];
+
+  function getGithubUserInfo() {
+    fetch(`https://api.github.com/users/${githubUser}`)
+      .then((res) => res.json())
+      .then((data) =>
+        setUserInfo({
+          name: data.name,
+          bio: data.bio,
+          location: data.location,
+          createdAt: data.created_at,
+        })
+      )
+      .catch((error) => console.log(error));
+  }
 
   function getGithubFollowers() {
     fetch(`https://api.github.com/users/${githubUser}/followers`)
@@ -30,16 +45,9 @@ export default function Profile() {
       .catch((error) => console.error(error));
   }
 
-  function getGithubName() {
-    fetch(`https://api.github.com/users/${githubUser}`)
-      .then((res) => res.json())
-      .then((data) => setProfileUserName(data.name))
-      .catch((error) => console.log(error));
-  }
-
   useEffect(() => {
+    getGithubUserInfo();
     getGithubFollowers();
-    getGithubName();
   }, []);
 
   function handleShowMoreFollowers(e) {
@@ -83,10 +91,23 @@ export default function Profile() {
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <h1 className="title">
-              {profileUserName === null ? githubUser : profileUserName}
-            </h1>
+            <h1 className="title subPageTitle">{userInfo.name}</h1>
+            <span className="bio">{userInfo.bio}</span>
+
             <OrkutNostalgicIconSet />
+
+            <InfoBox>
+              <tbody>
+                <tr>
+                  <td className="textOnRight">localização:</td>
+                  <td>{userInfo.location}</td>
+                </tr>
+                <tr>
+                  <td className="textOnRight">membro desde:</td>
+                  <td>{new Date(userInfo.createdAt).toLocaleDateString()}</td>
+                </tr>
+              </tbody>
+            </InfoBox>
           </Box>
         </div>
         <div

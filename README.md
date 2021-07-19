@@ -12,6 +12,8 @@
 
 O **Alurakut** é uma aplicação web clone do nosso queridíssimo e já falecido Orkut, porém trazendo uma interface mais moderna e utilizando as melhores tecnologias de desenvolvimento!
 
+_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://www.linkedin.com/feed/update/urn:li:activity:6822353102180507648/)_
+
 <!-- Ao logar na aplicação com nosso username do GitHub vamos para a página home, nela vemos nossos amigos (seguidores do GitHub), as comunidades que participamos, e os últimos recados deixados. Além disso é possível criar novas comunidades e novos recados! -->
 
 ## Páginas 🔖
@@ -96,27 +98,29 @@ A aplicação contém as seguintes funcionalidades:
   <img alt="Cadastro" src=".github/scraps.png" width="100%">
 </p>
 
-_Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://www.linkedin.com/feed/update/urn:li:activity:6822353102180507648/)_
+<!-- _Veja o vídeo demonstrativo de todas as funcionalidades [Clique aqui](https://www.linkedin.com/feed/update/urn:li:activity:6822353102180507648/)_ -->
 
 ## Como utilizar? 📌
 
-Para utilizar a aplicação em sua máquina é necessário ter os seguintes softwares instalados:
+_Para utilizar o **Alurakut**, basta acessá-lo diretamente no seu navegador! [Clique aqui](https://alurakut-vinixiii.vercel.app)_
+
+<!-- Para utilizar a aplicação em sua máquina é necessário ter os seguintes softwares instalados:
 
 - [Node.js](https://nodejs.org/pt-br/)
 
 Com os software citados acima instalados, basta seguir os seguintes passos para executar a aplicação em sua máquina:
 
 1. **Clonar o projeto** <br>
-   Abra o terminal em uma pasta de sua preferência e cole o seguinte código: 
-   
+   Abra o terminal em uma pasta de sua preferência e cole o seguinte código:
+
    _`git clone https://github.com/vinixiii/alurakut`_
 
 2. **Instalar as depêndencias** <br>
-   Dentro do diretório do projeto, abra o terminal e cole o código: 
-   
+   Dentro do diretório do projeto, abra o terminal e cole o código:
+
    _`npm install`_ ou _`yarn`_
 
-_Ou acesse o **Alurakut** no seu navegador! [Clique aqui](https://alurakut-vinixiii.vercel.app)_
+_Ou acesse o **Alurakut** no seu navegador! [Clique aqui](https://alurakut-vinixiii.vercel.app)_ -->
 
 ## Tecnologias 🛠
 
