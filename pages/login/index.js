@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import nookies from 'nookies';
 
+import { useUserId } from '../../src/hooks/useUserId';
+
 export default function Login() {
   const router = useRouter();
+
   const [githubUser, setGithubUser] = useState('');
   const [userExist, setUserExist] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleSignIn(e) {
     e.preventDefault();
 
     setUserExist(true);
+    setIsLoading(true);
 
     fetch('https://alurakut.vercel.app/api/login', {
       method: 'POST',
@@ -35,7 +40,9 @@ export default function Login() {
       if (isAuthenticated) {
         await getUsersFromDato();
 
-        const userId = await getUserIdFromDato();
+        const userId = await useUserId(githubUser);
+
+        setIsLoading(false);
 
         nookies.set(null, 'token', data.token, {
           path: '/',
@@ -51,6 +58,7 @@ export default function Login() {
         return;
       }
 
+      setIsLoading(false);
       setUserExist(false);
     });
   }
@@ -58,24 +66,9 @@ export default function Login() {
   //Busca no DatoCMS todos os usuários e vê se o usuário
   //que está fazendo login já está cadastrado
   async function getUsersFromDato() {
-    const { data } = await fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          allUsers(filter: { username: { in: ["${githubUser}"] } }) {
-            id,
-            username,
-          }
-        }`,
-      }),
-    }).then((res) => res.json());
+    const userId = await useUserId(githubUser);
 
-    if (data.allUsers.length === 0) {
+    if (userId === null) {
       const isCreated = await createNewUser(githubUser);
 
       if (isCreated) {
@@ -99,28 +92,6 @@ export default function Login() {
     });
 
     return true;
-  }
-
-  async function getUserIdFromDato() {
-    const { data } = await fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          user(filter: {username: {eq: "${githubUser}"}}) {
-            id
-          }
-        }`,
-      }),
-    })
-      .then((res) => res.json())
-      .catch((err) => console.error(err));
-
-    return data.user.id;
   }
 
   return (
@@ -169,36 +140,19 @@ export default function Login() {
                 Este usuário é inválido! Tente novamente
               </span>
             )}
-            <button type="submit">Login</button>
+            <button type="submit" disabled={isLoading ? true : false}>
+              {isLoading ? 'Entrando...' : 'Entrar'}
+            </button>
           </form>
 
-          {/* <form className="box" onSubmit={(e) => handleRegister(e)}>
-            <p>
-              Acesse agora mesmo com seu usuário do <strong>GitHub</strong>!
-            </p>
-            <input
-              placeholder="Usuário"
-              value={githubUser}
-              onChange={(e) => setGithubUser(e.target.value)}
-            />
-            {!userExist && (
-              <span
-                style={{ fontSize: '13px', color: 'red', marginBottom: '12px' }}
-              >
-                Este usuário é inválido! Tente novamente
-              </span>
-            )}
-            <button type="submit">Cadastrar</button>
-          </form> */}
-
-          <footer className="box">
+          {/* <footer className="box">
             <p>
               Ainda não é membro? <br />
               <a href="/login">
-                <strong>ENTRAR JÁ</strong>
+                <strong>CADASTRE-SE JÁ</strong>
               </a>
             </p>
-          </footer>
+          </footer> */}
         </section>
 
         <footer className="footerArea">

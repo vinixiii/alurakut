@@ -26,6 +26,7 @@ export default function Community({ githubUser }) {
   const [isMember, setIsMember] = useState(false);
   const [communityInfo, setCommunityInfo] = useState({});
   const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function getCommunityInfoFromDato() {
     const { data } = await fetch('https://graphql.datocms.com/', {
@@ -85,7 +86,10 @@ export default function Community({ githubUser }) {
     const alreadyMember = members.filter((member) => member.id == githubUserId);
 
     if (alreadyMember < 1) {
-      fetch('/api/updateCommunity', {
+      console.log('Entrei');
+      setIsLoading(true);
+
+      await fetch('/api/updateCommunity', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,6 +113,9 @@ export default function Community({ githubUser }) {
           });
         })
         .catch((err) => console.error(err));
+
+      setIsLoading(false);
+      console.log('Sai');
 
       return;
     }
@@ -153,6 +160,7 @@ export default function Community({ githubUser }) {
               handleJoinCommunity={handleJoinCommunity}
               isCommunityInfo
               isMember={isMember}
+              isLoading={isLoading}
             />
           </Box>
         </div>

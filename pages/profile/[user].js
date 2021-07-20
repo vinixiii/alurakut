@@ -7,11 +7,15 @@ import {
   AlurakutProfileSidebarMenuDefault,
   OrkutNostalgicIconSet,
 } from '../../src/lib/AlurakutCommons';
+
 import MainGrid from '../../src/components/MainGrid';
 import Box from '../../src/components/Box';
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations';
 import InfoBox from '../../src/components/InfoBox';
+
 import { useCheckAuth } from '../../src/hooks/useCheckAuth';
+import { useCommunities } from '../../src/hooks/useCommunities';
+import { useUserId } from '../../src/hooks/useUserId';
 
 export default function Profile() {
   const router = useRouter();
@@ -24,7 +28,7 @@ export default function Profile() {
     useState(false);
 
   const [followers, setFollowers] = useState([]);
-  const communities = [];
+  const [communities, setCommunities] = useState([]);
 
   function getGithubUserInfo() {
     fetch(`https://api.github.com/users/${githubUser}`)
@@ -47,9 +51,21 @@ export default function Profile() {
       .catch((error) => console.error(error));
   }
 
+  async function getUserCommunities() {
+    //Checa se o usuário existe no DatoCMS
+    const userId = await useUserId(githubUser);
+
+    //Se exister, faz a requisição para trazer suas comunidades
+    if (userId !== null) {
+      const communitiesFromDato = await useCommunities(userId);
+      setCommunities(communitiesFromDato);
+    }
+  }
+
   useEffect(() => {
     getGithubUserInfo();
     getGithubFollowers();
+    getUserCommunities();
   }, []);
 
   function handleShowMoreFollowers(e) {
@@ -93,7 +109,9 @@ export default function Profile() {
         </div>
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
-            <h1 className="title subPageTitle">{userInfo.name}</h1>
+            <h1 className="title subPageTitle">
+              {userInfo.name === null ? githubUser : userInfo.name}
+            </h1>
             <span className="bio">{userInfo.bio}</span>
 
             <OrkutNostalgicIconSet />
@@ -149,15 +167,19 @@ export default function Profile() {
           <ProfileRelationsBoxWrapper
             isShowingMoreItems={isShowingMoreCommunities}
           >
-            <h2 className="smallTitle">Comunidades ({communities.length})</h2>
+            <h2 className="smallTitle">
+              Minhas comunidades ({communities.length})
+            </h2>
             <ul>
               {communities.map((item) => {
                 return (
                   <li key={item.id}>
-                    <a href={item.link} target="_blank">
-                      <img src={item.image} />
-                      <span>{item.title}</span>
-                    </a>
+                    <Link href={`/communities/${item.id}`} passHref>
+                      <a>
+                        <img src={item.imageUrl} />
+                        <span>{item.title}</span>
+                      </a>
+                    </Link>
                   </li>
                 );
               })}
