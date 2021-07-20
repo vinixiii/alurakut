@@ -223,6 +223,7 @@ export function AlurakutProfileSidebarMenuDefault({
   isFriendInfo,
   handleJoinCommunity,
   isMember,
+  isLoading,
 }) {
   function handleShowDevelopmentInfo(e) {
     e.preventDefault();
@@ -285,6 +286,7 @@ export function AlurakutProfileSidebarMenuDefault({
           <button
             className="plusButton"
             onClick={(e) => handleJoinCommunity(e)}
+            disabled={!isLoading ? '' : true}
           >
             <img src={`${BASE_URL}/icons/plus.svg`} />
             {isMember ? 'Participando' : 'Participar da comunidade'}
@@ -323,6 +325,10 @@ AlurakutProfileSidebarMenuDefault.Wrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: flex-start;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
 
     img {
       display: inline;

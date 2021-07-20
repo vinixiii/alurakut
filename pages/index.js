@@ -17,6 +17,7 @@ import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import Scrap from '../src/components/Scrap';
 import InfoBox from '../src/components/InfoBox';
 import { useCheckAuth } from '../src/hooks/useCheckAuth';
+import { useCommunities } from '../src/hooks/useCommunities';
 
 export default function Home({ githubUser }) {
   const [githubUserId, setGithubUserId] = useState('');
@@ -59,61 +60,6 @@ export default function Home({ githubUser }) {
       .catch((error) => console.error(error));
   }
 
-  function getMyUserInfoFromDato() {
-    fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          user(filter: {username: {eq: "${githubUser}"}}) {
-            id
-          }
-        }`,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (dataFromDato) => {
-        const userId = await dataFromDato.data.user.id;
-        getMyCommunitiesFromDato(userId);
-        setGithubUserId(userId);
-
-        nookies.set(null, 'userId', userId, {
-          path: '/',
-          maxAge: 86400 * 7,
-        });
-      });
-  }
-
-  function getMyCommunitiesFromDato(userId) {
-    fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          allCommunities(filter: { users: { allIn: ["${userId}"] } }) {
-            id,
-            title,
-            imageUrl,
-            creatorSlug
-          }
-        }`,
-      }),
-    })
-      .then((res) => res.json())
-      .then((dataFromDato) => {
-        const communitiesFromDato = dataFromDato.data.allCommunities;
-        setCommunities(communitiesFromDato);
-      });
-  }
-
   function getScrapsFromDato() {
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
@@ -142,7 +88,6 @@ export default function Home({ githubUser }) {
   useEffect(() => {
     getGithubUserInfo();
     getGithubFollowers();
-    getMyUserInfoFromDato();
     getScrapsFromDato();
   }, []);
 
@@ -289,7 +234,8 @@ export default function Home({ githubUser }) {
         <div className="welcome-area" style={{ gridArea: 'welcome-area' }}>
           <Box>
             <h1 className="title subPageTitle">
-              Bem-vindo(a), {userInfo.name}
+              Bem-vindo(a),{' '}
+              {userInfo.name === null ? githubUser : userInfo.name}
             </h1>
             <span className="bio">{userInfo.bio}</span>
 
@@ -343,7 +289,7 @@ export default function Home({ githubUser }) {
 
                 <button
                   type="submit"
-                  disabled={!isCreatingCommunity ? '' : 'false'}
+                  disabled={!isCreatingCommunity ? '' : true}
                 >
                   {isCreatingCommunity ? 'Criando...' : 'Criar comunidade'}
                 </button>
@@ -362,10 +308,7 @@ export default function Home({ githubUser }) {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={!isCreatingScrap ? '' : 'false'}
-                >
+                <button type="submit" disabled={!isCreatingScrap ? '' : true}>
                   {isCreatingScrap ? 'Enviando...' : 'Enviar recado'}
                 </button>
               </form>
