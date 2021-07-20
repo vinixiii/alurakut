@@ -7,12 +7,11 @@ export default function Login() {
   const [githubUser, setGithubUser] = useState('');
   const [userExist, setUserExist] = useState(true);
 
-  async function handleSignIn(e) {
+  function handleSignIn(e) {
     e.preventDefault();
 
-    // const exist = await checkIfExistsGithubUser();
+    setUserExist(true);
 
-    // if (exist) {
     fetch('https://alurakut.vercel.app/api/login', {
       method: 'POST',
       headers: {
@@ -34,9 +33,16 @@ export default function Login() {
       ).then((res) => res.json());
 
       if (isAuthenticated) {
-        getUsersFromDato();
+        await getUsersFromDato();
+
+        const userId = await getUserIdFromDato();
 
         nookies.set(null, 'token', data.token, {
+          path: '/',
+          maxAge: 86400 * 7,
+        });
+
+        nookies.set(null, 'userId', userId, {
           path: '/',
           maxAge: 86400 * 7,
         });
@@ -47,13 +53,12 @@ export default function Login() {
 
       setUserExist(false);
     });
-    // }
   }
 
   //Busca no DatoCMS todos os usuários e vê se o usuário
   //que está fazendo login já está cadastrado
-  function getUsersFromDato() {
-    fetch('https://graphql.datocms.com/', {
+  async function getUsersFromDato() {
+    const { data } = await fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,32 +67,28 @@ export default function Login() {
       },
       body: JSON.stringify({
         query: `query {
-          allUsers {
+          allUsers(filter: { username: { in: ["${githubUser}"] } }) {
             id,
             username,
           }
         }`,
       }),
-    })
-      .then((res) => res.json())
-      .then((dataFromDato) => {
-        const usersFromDato = dataFromDato.data.allUsers;
-        const userFiltered = usersFromDato.filter(
-          (user) => user.username === githubUser
-        );
+    }).then((res) => res.json());
 
-        if (userFiltered.length < 1) {
-          createNewUser(githubUser);
-          return true;
-        }
+    if (data.allUsers.length === 0) {
+      const isCreated = await createNewUser(githubUser);
 
-        return false;
-      });
+      if (isCreated) {
+        return;
+      }
+    }
+
+    return;
   }
 
   //Cadastra um novo Usuário
-  function createNewUser(newUser) {
-    fetch('/api/users', {
+  async function createNewUser(newUser) {
+    await fetch('/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,18 +97,31 @@ export default function Login() {
         username: newUser,
       }),
     });
+
+    return true;
   }
 
-  // function handleRegister(e) {
-  //   e.preventDefault();
-  //   const userCreated = getUsersFromDato();
+  async function getUserIdFromDato() {
+    const { data } = await fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
+      },
+      body: JSON.stringify({
+        query: `query {
+          user(filter: {username: {eq: "${githubUser}"}}) {
+            id
+          }
+        }`,
+      }),
+    })
+      .then((res) => res.json())
+      .catch((err) => console.error(err));
 
-  //   if (userCreated) {
-  //     alert('Usuário cadastrado!');
-  //     setIsRegistration(false);
-  //   }
-
-  // }
+    return data.user.id;
+  }
 
   return (
     <main
@@ -144,7 +158,9 @@ export default function Login() {
             <input
               placeholder="Usuário"
               value={githubUser}
-              onChange={(e) => setGithubUser(e.target.value)}
+              onChange={(e) =>
+                setGithubUser(e.target.value.trim().toLowerCase())
+              }
             />
             {!userExist && (
               <span

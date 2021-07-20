@@ -222,6 +222,7 @@ export function AlurakutProfileSidebarMenuDefault({
   isCommunityInfo,
   isFriendInfo,
   handleJoinCommunity,
+  isMember,
 }) {
   function handleShowDevelopmentInfo(e) {
     e.preventDefault();
@@ -286,7 +287,7 @@ export function AlurakutProfileSidebarMenuDefault({
             onClick={(e) => handleJoinCommunity(e)}
           >
             <img src={`${BASE_URL}/icons/plus.svg`} />
-            Participar da comunidade
+            {isMember ? 'Participando' : 'Participar da comunidade'}
           </button>
         </nav>
       )}

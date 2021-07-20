@@ -3,19 +3,18 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import nookies from 'nookies';
 import jwt from 'jsonwebtoken';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
-  OrkutNostalgicIconSet,
 } from '../../src/lib/AlurakutCommons';
-
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import MainGrid from '../../src/components/MainGrid';
 import Box from '../../src/components/Box';
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations';
 import InfoBox from '../../src/components/InfoBox';
+
 import { useCheckAuth } from '../../src/hooks/useCheckAuth';
 
 export default function Community({ githubUser }) {
@@ -23,13 +22,13 @@ export default function Community({ githubUser }) {
   const { community } = router.query;
   const communityId = community;
 
-  const [githubUserId, setGithubUserId] = useState('');
-  const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
   const [members, setMembers] = useState([]);
+  const [isMember, setIsMember] = useState(false);
   const [communityInfo, setCommunityInfo] = useState({});
+  const [isShowingMoreMembers, setIsShowingMoreMembers] = useState(false);
 
-  function getCommunityInfoFromDato() {
-    fetch('https://graphql.datocms.com/', {
+  async function getCommunityInfoFromDato() {
+    const { data } = await fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,53 +51,38 @@ export default function Community({ githubUser }) {
       }),
     })
       .then((res) => res.json())
-      .then((dataFromDato) => {
-        const communityInfoFromDato = dataFromDato.data.community;
-        setCommunityInfo({
-          title: communityInfoFromDato.title,
-          imageUrl: communityInfoFromDato.imageUrl,
-          creatorSlug: communityInfoFromDato.creatorSlug,
-          createdAt: communityInfoFromDato.createdAt,
-        });
-        setMembers(communityInfoFromDato.users);
-        // setCommunityInfo(communityInfoFromDato);
-      });
-  }
+      .catch((err) => console.error(err));
 
-  function getMyUserInfoFromDato() {
-    fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: 'a4f7abf1a97be84d00efed71df0b1c',
-      },
-      body: JSON.stringify({
-        query: `query {
-          user(filter: {username: {eq: "${githubUser}"}}) {
-            id
-          }
-        }`,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (dataFromDato) => {
-        const userId = await dataFromDato.data.user.id;
-        setGithubUserId(userId);
-      });
+    const findUser = data.community.users.find(
+      (user) => user.username === githubUser
+    );
+
+    console.log(findUser);
+
+    if (findUser) {
+      setIsMember(true);
+    }
+
+    setCommunityInfo({
+      title: data.community.title,
+      imageUrl: data.community.imageUrl,
+      creatorSlug: data.community.creatorSlug,
+      createdAt: data.community.createdAt,
+    });
+
+    setMembers(data.community.users);
   }
 
   useEffect(() => {
-    getMyUserInfoFromDato();
     getCommunityInfoFromDato();
   }, []);
 
-  function handleJoinCommunity(e) {
+  async function handleJoinCommunity(e) {
     e.preventDefault();
 
-    // const cookies = nookies.get();
+    const githubUserId = await nookies.get().userId;
 
-    const alreadyMember = members.filter((x) => x.id == githubUserId);
+    const alreadyMember = members.filter((member) => member.id == githubUserId);
 
     if (alreadyMember < 1) {
       fetch('/api/updateCommunity', {
@@ -110,9 +94,21 @@ export default function Community({ githubUser }) {
           userId: githubUserId,
           communityId: communityId,
         }),
-      }).then(() => {
-        getCommunityInfoFromDato();
-      });
+      })
+        .then(async () => {
+          await getCommunityInfoFromDato();
+
+          toast.success('Agora você participa desta comunidade! 🎉', {
+            position: 'bottom-right',
+            autoClose: 4000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        })
+        .catch((err) => console.error(err));
 
       return;
     }
@@ -156,6 +152,7 @@ export default function Community({ githubUser }) {
             <AlurakutProfileSidebarMenuDefault
               handleJoinCommunity={handleJoinCommunity}
               isCommunityInfo
+              isMember={isMember}
             />
           </Box>
         </div>
@@ -168,14 +165,6 @@ export default function Community({ githubUser }) {
             <hr />
             <InfoBox>
               <tbody>
-                {/* <tr>
-                  <td className="textOnRight">idioma:</td>
-                  <td>Português</td>
-                </tr>
-                <tr>
-                  <td className="textOnRight">categoria:</td>
-                  <td>Pessoas</td>
-                </tr> */}
                 <tr>
                   <td className="textOnRight">dono:</td>
                   <td>{communityInfo.creatorSlug}</td>
