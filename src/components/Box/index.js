@@ -130,6 +130,21 @@ const Box = styled.div`
     border: 1px solid #e0e3ed;
     padding: 8px;
   }
+
+  .noCommunitiesMessage {
+    /* background-color: #fcfdde;
+    padding: 16px;
+    border-radius: 8px; */
+    font-size: 14px;
+    color: #333333;
+    text-align: justify;
+
+    span {
+      color: red;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
 `;
 
 export default Box;

@@ -2,21 +2,22 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import nookies from 'nookies';
 import jwt from 'jsonwebtoken';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
   OrkutNostalgicIconSet,
 } from '../src/lib/AlurakutCommons';
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import MainGrid from '../src/components/MainGrid/index';
 import Box from '../src/components/Box/index';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import Scrap from '../src/components/Scrap';
 import InfoBox from '../src/components/InfoBox';
+
 import { useCheckAuth } from '../src/hooks/useCheckAuth';
+import { useUserId } from '../src/hooks/useUserId';
 import { useCommunities } from '../src/hooks/useCommunities';
 
 export default function Home({ githubUser }) {
@@ -60,6 +61,17 @@ export default function Home({ githubUser }) {
       .catch((error) => console.error(error));
   }
 
+  async function getCommunitiesFromDato() {
+    //Checa se o usuário existe no DatoCMS
+    const userId = await useUserId(githubUser);
+
+    //Se exister, faz a requisição para trazer suas comunidades
+    if (userId !== null) {
+      const communitiesFromDato = await useCommunities(userId);
+      setCommunities(communitiesFromDato);
+    }
+  }
+
   function getScrapsFromDato() {
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
@@ -88,6 +100,7 @@ export default function Home({ githubUser }) {
   useEffect(() => {
     getGithubUserInfo();
     getGithubFollowers();
+    getCommunitiesFromDato();
     getScrapsFromDato();
   }, []);
 
@@ -375,6 +388,7 @@ export default function Home({ githubUser }) {
             <h2 className="smallTitle">
               Minhas comunidades ({communities.length})
             </h2>
+
             <ul>
               {communities.map((item) => {
                 return (
@@ -401,6 +415,17 @@ export default function Home({ githubUser }) {
               </>
             )}
           </ProfileRelationsBoxWrapper>
+          {communities.length < 1 && (
+            <Box style={{ backgroundColor: '#fcfdde' }}>
+              <div className="noCommunitiesMessage">
+                <p>
+                  <span>Dica:</span> Para participar de uma comunidade acesse a
+                  página de comunidades clicando em "Comunidades" na parte
+                  superior da página.
+                </p>
+              </div>
+            </Box>
+          )}
         </div>
       </MainGrid>
       <ToastContainer newestOnTop />

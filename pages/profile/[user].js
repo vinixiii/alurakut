@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import nookies from 'nookies';
+import { ToastContainer } from 'react-toastify';
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
@@ -20,8 +21,8 @@ import { useUserId } from '../../src/hooks/useUserId';
 export default function Profile() {
   const router = useRouter();
   const { user } = router.query;
-
   const githubUser = user;
+
   const [userInfo, setUserInfo] = useState({});
   const [isShowingMoreFollowers, setIsShowingMoreFollowers] = useState(false);
   const [isShowingMoreCommunities, setIsShowingMoreCommunities] =
@@ -66,7 +67,7 @@ export default function Profile() {
     getGithubUserInfo();
     getGithubFollowers();
     getUserCommunities();
-  }, []);
+  }, [githubUser]);
 
   function handleShowMoreFollowers(e) {
     e.preventDefault();
@@ -198,6 +199,7 @@ export default function Profile() {
           </ProfileRelationsBoxWrapper>
         </div>
       </MainGrid>
+      <ToastContainer newestOnTop />
     </>
   );
 }
